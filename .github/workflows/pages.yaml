@@ -17,13 +17,7 @@ jobs:
         python-version: '3.x'
     - name: Install requirements
       run: |
-        pip install sphinx sphinx-rtd-theme
-    - name: Debug Python environment
-      run: |
-        echo "PATH: $PATH"
-        which python
-        python -c "import sys; print(sys.executable)"
-        pip list | grep sphinx
+        python -m pip install sphinx sphinx-rtd-theme
     - name: Generate API docs
       run: |
         PYTHONPATH=$GITHUB_WORKSPACE python -m sphinx.apidoc -o docs/ dpnn_lib
