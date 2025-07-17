@@ -4,11 +4,26 @@ from dpnn_lib.cells.cell import DistributionCell
 from dpnn_lib.distributions.base import BaseDistribution
 
 class DistributionLayer(nn.Module):
+    """
+    분포 셀들로 구성된 단일 레이어입니다.
+
+    Args:
+        cells (List[DistributionCell]): 레이어를 구성하는 분포 셀의 리스트.
+    """
     def __init__(self, cells: List[DistributionCell]):
         super().__init__()
         self.cells = nn.ModuleList(cells)
 
     def forward(self, input_distributions: List[BaseDistribution]) -> List[BaseDistribution]:
+        """
+        입력 분포를 각 셀에 전파하고 결과를 집계합니다.
+
+        Args:
+            input_distributions (List[BaseDistribution]): 레이어에 입력될 분포의 리스트.
+
+        Returns:
+            List[BaseDistribution]: 레이어의 출력 분포 리스트.
+        """
         if len(input_distributions) != len(self.cells):
             raise ValueError("Number of input distributions must match number of cells in the layer.")
 

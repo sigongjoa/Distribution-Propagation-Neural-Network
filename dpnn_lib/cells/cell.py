@@ -5,6 +5,13 @@ from dpnn_lib.distributions.base import BaseDistribution
 from dpnn_lib.distributions.gaussian import GaussianDistribution # Assuming output is Gaussian
 
 class DistributionCell(nn.Module):
+    """
+    분포를 처리하고 업데이트하는 기본 셀 단위입니다.
+
+    Args:
+        initial_distribution (BaseDistribution): 셀의 초기 분포.
+        embedding_dim (int, optional): 임베딩 차원 (기본값: 16).
+    """
     def __init__(self, initial_distribution: BaseDistribution, embedding_dim: int = 16):
         super().__init__()
         self.embedding_dim = embedding_dim
@@ -24,6 +31,16 @@ class DistributionCell(nn.Module):
         self.neighbor_param_to_embedding = nn.Linear(2, embedding_dim)
 
     def forward(self, current_distribution: BaseDistribution, neighbor_distributions: List[BaseDistribution]) -> GaussianDistribution:
+        """
+        현재 분포와 이웃 분포를 기반으로 새로운 분포를 계산합니다.
+
+        Args:
+            current_distribution (BaseDistribution): 현재 셀의 분포.
+            neighbor_distributions (List[BaseDistribution]): 이웃 셀들의 분포 리스트.
+
+        Returns:
+            GaussianDistribution: 업데이트된 Gaussian 분포.
+        """
         # Extract current cell's parameters
         if not isinstance(current_distribution, GaussianDistribution):
             raise NotImplementedError("DistributionCell only supports GaussianDistribution for now.")
@@ -53,4 +70,13 @@ class DistributionCell(nn.Module):
         return GaussianDistribution(mu=new_mu, var=new_var)
 
     def reconstruct(self, distribution: BaseDistribution): # Takes distribution as argument
+        """
+        주어진 분포에서 샘플을 재구성합니다.
+
+        Args:
+            distribution (BaseDistribution): 재구성할 분포.
+
+        Returns:
+            torch.Tensor: 재구성된 샘플.
+        """
         return distribution.sample()

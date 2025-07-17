@@ -4,6 +4,14 @@ from .attention import DistAttention
 from .feed_forward import DistFeedForward
 
 class DistTransformerBlock(nn.Module):
+    """
+    분포를 처리하는 트랜스포머 블록입니다.
+
+    Args:
+        d_model (int): 모델 차원.
+        num_heads (int): 어텐션 헤드 수.
+        d_ff (int): 피드포워드 신경망의 내부 차원.
+    """
     def __init__(self, d_model, num_heads, d_ff):
         super().__init__()
         self.attn = DistAttention(d_model, num_heads)
@@ -12,6 +20,15 @@ class DistTransformerBlock(nn.Module):
         self.norm2= nn.LayerNorm(d_model)
 
     def forward(self, dist_in: GaussianDistribution):
+        """
+        입력 분포에 대해 셀프 어텐션과 피드포워드 네트워크를 적용합니다.
+
+        Args:
+            dist_in (GaussianDistribution): 입력 Gaussian 분포.
+
+        Returns:
+            GaussianDistribution: 처리된 Gaussian 분포.
+        """
         # Self-Attn
         attn_out = self.attn(dist_in)
         # Residual combine = 분포 가중합

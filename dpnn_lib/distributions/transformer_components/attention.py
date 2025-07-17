@@ -6,6 +6,13 @@ import math
 from dpnn_lib.distributions.gaussian import GaussianDistribution
 
 class DistAttention(nn.Module):
+    """
+    분포에 대한 어텐션 메커니즘입니다.
+
+    Args:
+        d_model (int): 모델 차원.
+        num_heads (int): 어텐션 헤드 수.
+    """
     def __init__(self, d_model, num_heads):
         super().__init__()
         self.num_heads = num_heads
@@ -21,6 +28,15 @@ class DistAttention(nn.Module):
         self.out_var= nn.Linear(d_model, d_model)
 
     def forward(self, dist: GaussianDistribution):
+        """
+        입력 분포에 대해 어텐션을 수행합니다.
+
+        Args:
+            dist (GaussianDistribution): 입력 Gaussian 분포.
+
+        Returns:
+            GaussianDistribution: 어텐션이 적용된 Gaussian 분포.
+        """
         # Handle 2D inputs by adding a dummy sequence dimension
         is_2d = dist.mu.dim() == 2
         if is_2d:
