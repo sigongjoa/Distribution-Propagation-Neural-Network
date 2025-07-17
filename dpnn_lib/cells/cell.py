@@ -8,7 +8,7 @@ class DistributionCell(nn.Module):
     def __init__(self, initial_distribution: BaseDistribution, embedding_dim: int = 16):
         super().__init__()
         self.embedding_dim = embedding_dim
-        self._distribution = initial_distribution # Store the actual distribution object
+        self.initial_distribution = initial_distribution # Store initial distribution
 
         # Network to process current cell's parameters and aggregated neighbor embedding
         # Input: [current_mu, current_var] (2) + aggregated_neighbor_embedding (embedding_dim)
@@ -23,26 +23,18 @@ class DistributionCell(nn.Module):
         # Assuming Gaussian: mu, var (2 parameters)
         self.neighbor_param_to_embedding = nn.Linear(2, embedding_dim)
 
-    @property
-    def distribution(self):
-        return self._distribution
-
-    @distribution.setter
-    def distribution(self, new_dist: BaseDistribution):
-        self._distribution = new_dist
-
-    def forward(self, neighbor_cells: List['DistributionCell']) -> GaussianDistribution:
+    def forward(self, current_distribution: BaseDistribution, neighbor_distributions: List[BaseDistribution]) -> GaussianDistribution:
         # Extract current cell's parameters
-        if not isinstance(self.distribution, GaussianDistribution):
+        if not isinstance(current_distribution, GaussianDistribution):
             raise NotImplementedError("DistributionCell only supports GaussianDistribution for now.")
-        current_params_tensor = torch.stack([self.distribution.mu, self.distribution.var])
+        current_params_tensor = torch.stack([current_distribution.mu, current_distribution.var])
 
         # Process neighbor parameters and aggregate
         neighbor_embeddings = []
-        for neighbor_cell in neighbor_cells:
-            if not isinstance(neighbor_cell.distribution, GaussianDistribution):
+        for neighbor_dist in neighbor_distributions:
+            if not isinstance(neighbor_dist, GaussianDistribution):
                 raise NotImplementedError("Neighbor DistributionCell only supports GaussianDistribution for now.")
-            n_params = torch.stack([neighbor_cell.distribution.mu, neighbor_cell.distribution.var])
+            n_params = torch.stack([neighbor_dist.mu, neighbor_dist.var])
             neighbor_embeddings.append(self.neighbor_param_to_embedding(n_params))
 
         if neighbor_embeddings:
@@ -60,5 +52,5 @@ class DistributionCell(nn.Module):
 
         return GaussianDistribution(mu=new_mu, var=new_var)
 
-    def reconstruct(self):
-        return self.distribution.sample()
+    def reconstruct(self, distribution: BaseDistribution): # Takes distribution as argument
+        return distribution.sample()

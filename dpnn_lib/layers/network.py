@@ -2,28 +2,22 @@ import torch.nn as nn
 from typing import List
 from dpnn_lib.layers.layer import DistributionLayer
 from dpnn_lib.distributions.gaussian import GaussianDistribution
+from dpnn_lib.distributions.base import BaseDistribution
 
 class DistributionNetwork(nn.Module):
     def __init__(self, layers: List[DistributionLayer]):
         super().__init__()
         self.layers = nn.ModuleList(layers)
 
-    def forward(self):
-        for layer in self.layers:
-            layer.forward()
+    def forward(self, initial_distributions: List[BaseDistribution]) -> List[BaseDistribution]:
+        # Propagate through layers
+        current_dists = initial_distributions
+        for i, layer in enumerate(self.layers):
+            # Pass the current distributions to the layer's forward method
+            current_dists = layer.forward(current_dists)
+        return current_dists # Return the final output distributions
 
     def get_output(self):
-        # Return the distributions of the cells in the last layer
-        if not self.layers:
-            return []
-        
-        output_distributions = []
-        for cell in self.layers[-1].cells:
-            if isinstance(cell.distribution, GaussianDistribution):
-                # Detach the tensors to break the computation graph
-                detached_mu = cell.distribution.mu.detach()
-                detached_var = cell.distribution.var.detach()
-                output_distributions.append(GaussianDistribution(mu=detached_mu, var=detached_var))
-            else:
-                output_distributions.append(cell.distribution)
-        return output_distributions
+        # This method will no longer be needed in its current form
+        # The forward method will return the output
+        raise NotImplementedError("get_output() is deprecated. Use forward() to get output distributions.")

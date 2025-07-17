@@ -2,21 +2,52 @@ import torch
 from .base import BaseDistribution
 
 class GaussianDistribution(BaseDistribution):
+    """
+    Gaussian (정규) 분포를 나타내는 클래스.
+
+    Args:
+        mu (torch.Tensor): 분포의 평균 (mean).
+        var (torch.Tensor): 분포의 분산 (variance).
+    """
     def __init__(self, mu: torch.Tensor, var: torch.Tensor):
         super().__init__(params={'mu': mu, 'var': var}) # Pass tensors directly
         self.mu = mu
-        self.var = torch.clamp(var, min=1e-6)
+        self.var = var
 
     def sample(self):
-        return torch.normal(self.mu, torch.sqrt(self.var))
+        """
+        Gaussian 분포에서 샘플을 생성합니다.
+
+        Returns:
+            torch.Tensor: 샘플링된 값.
+        """
+        return torch.normal(self.mu, torch.sqrt(torch.max(self.var, torch.tensor(0.0, device=self.var.device)) + 1e-6))
 
     def log_prob(self, x):
-        x_tensor = torch.tensor(x, dtype=torch.float32)
+        """
+        주어진 값에 대한 로그 확률을 계산합니다.
+
+        Args:
+            x (torch.Tensor): 관측값.
+
+        Returns:
+            torch.Tensor: log P(x).
+        """
+        x_tensor = x.detach().clone().float()
         coeff = -0.5 * torch.log(2 * torch.pi * self.var)
         exponent = -((x_tensor - self.mu)**2) / (2 * self.var)
         return (coeff + exponent)
 
     def combine(self, other: 'GaussianDistribution'):
+        """
+        두 Gaussian 분포를 결합합니다.
+
+        Args:
+            other (GaussianDistribution): 결합할 다른 Gaussian 분포.
+
+        Returns:
+            GaussianDistribution: 결합된 Gaussian 분포.
+        """
         # Combine two Gaussian distributions using precision-weighted averaging
         # This is more stable than simple averaging of mu and var
 
