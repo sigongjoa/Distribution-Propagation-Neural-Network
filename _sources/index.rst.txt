@@ -6,6 +6,7 @@ Welcome to DPNN’s documentation!
    :caption: Contents:
 
    modules
+   dpnn_lib
 
 Indices and tables
 ==================

@@ -20,8 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="색인" href="genindex.html" />
     <link rel="search" title="검색" href="search.html" />
-    <link rel="next" title="dpnn_lib.cells package" href="dpnn_lib.cells.html" />
-    <link rel="prev" title="DPNN Library API" href="modules.html" /> 
+    <link rel="prev" title="dpnn_lib.utils package" href="dpnn_lib.utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,28 +44,21 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">DPNN Library API</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">dpnn_lib package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.graph_ops.html">dpnn_lib.graph_ops package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.layers.html">dpnn_lib.layers package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.lie_group.html">dpnn_lib.lie_group package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.security.html">dpnn_lib.security package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">dpnn_lib</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dpnn_lib package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.graph_ops.html">dpnn_lib.graph_ops package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.layers.html">dpnn_lib.layers package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.lie_group.html">dpnn_lib.lie_group package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.security.html">dpnn_lib.security package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dpnn_lib">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -85,7 +77,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">DPNN Library API</a></li>
       <li class="breadcrumb-item active">dpnn_lib package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/dpnn_lib.rst.txt" rel="nofollow"> View page source</a>
@@ -104,16 +95,61 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html#dpnn-lib-cells-cell-module">dpnn_lib.cells.cell module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html#module-dpnn_lib.cells.cell">dpnn_lib.cells.cell module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.cells.html#dpnn_lib.cells.cell.DistributionCell"><code class="docutils literal notranslate"><span class="pre">DistributionCell</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.cells.html#dpnn_lib.cells.cell.DistributionCell.forward"><code class="docutils literal notranslate"><span class="pre">DistributionCell.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.cells.html#dpnn_lib.cells.cell.DistributionCell.reconstruct"><code class="docutils literal notranslate"><span class="pre">DistributionCell.reconstruct()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html#module-dpnn_lib.cells">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn-lib-diffusion-base-diffusion-module">dpnn_lib.diffusion.base_diffusion module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn-lib-diffusion-dirichlet-diffusion-module">dpnn_lib.diffusion.dirichlet_diffusion module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn-lib-diffusion-gaussian-diffusion-module">dpnn_lib.diffusion.gaussian_diffusion module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn-lib-diffusion-poisson-diffusion-module">dpnn_lib.diffusion.poisson_diffusion module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#module-dpnn_lib.diffusion.base_diffusion">dpnn_lib.diffusion.base_diffusion module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.denoise_block"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess.denoise_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.forward_step"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess.forward_step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.loss"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess.loss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_forward"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess.run_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_reverse"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess.run_reverse()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#module-dpnn_lib.diffusion.dirichlet_diffusion">dpnn_lib.diffusion.dirichlet_diffusion module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion"><code class="docutils literal notranslate"><span class="pre">DirichletDiffusion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.denoise_block"><code class="docutils literal notranslate"><span class="pre">DirichletDiffusion.denoise_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.forward_step"><code class="docutils literal notranslate"><span class="pre">DirichletDiffusion.forward_step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.loss"><code class="docutils literal notranslate"><span class="pre">DirichletDiffusion.loss()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#module-dpnn_lib.diffusion.gaussian_diffusion">dpnn_lib.diffusion.gaussian_diffusion module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock"><code class="docutils literal notranslate"><span class="pre">DistDiffusionBlock</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock.forward"><code class="docutils literal notranslate"><span class="pre">DistDiffusionBlock.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion"><code class="docutils literal notranslate"><span class="pre">GaussianDiffusion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.denoise_block"><code class="docutils literal notranslate"><span class="pre">GaussianDiffusion.denoise_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.forward_step"><code class="docutils literal notranslate"><span class="pre">GaussianDiffusion.forward_step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.loss"><code class="docutils literal notranslate"><span class="pre">GaussianDiffusion.loss()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#module-dpnn_lib.diffusion.poisson_diffusion">dpnn_lib.diffusion.poisson_diffusion module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion"><code class="docutils literal notranslate"><span class="pre">PoissonDiffusion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.denoise_block"><code class="docutils literal notranslate"><span class="pre">PoissonDiffusion.denoise_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.forward_step"><code class="docutils literal notranslate"><span class="pre">PoissonDiffusion.forward_step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.diffusion.html#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.loss"><code class="docutils literal notranslate"><span class="pre">PoissonDiffusion.loss()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html#module-dpnn_lib.diffusion">Module contents</a></li>
 </ul>
 </li>
@@ -121,12 +157,12 @@
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html">dpnn_lib.distributions.transformer_components package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-attention-module">dpnn_lib.distributions.transformer_components.attention module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-embedding-module">dpnn_lib.distributions.transformer_components.embedding module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-feed-forward-module">dpnn_lib.distributions.transformer_components.feed_forward module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-lm-head-module">dpnn_lib.distributions.transformer_components.lm_head module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-positional-encoding-module">dpnn_lib.distributions.transformer_components.positional_encoding module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#dpnn-lib-distributions-transformer-components-transformer-block-module">dpnn_lib.distributions.transformer_components.transformer_block module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.attention">dpnn_lib.distributions.transformer_components.attention module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.embedding">dpnn_lib.distributions.transformer_components.embedding module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.feed_forward">dpnn_lib.distributions.transformer_components.feed_forward module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.lm_head">dpnn_lib.distributions.transformer_components.lm_head module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.positional_encoding">dpnn_lib.distributions.transformer_components.positional_encoding module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components.transformer_block">dpnn_lib.distributions.transformer_components.transformer_block module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.transformer_components.html#module-dpnn_lib.distributions.transformer_components">Module contents</a></li>
 </ul>
 </li>
@@ -142,10 +178,40 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn-lib-distributions-dirichlet-module">dpnn_lib.distributions.dirichlet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn-lib-distributions-gaussian-module">dpnn_lib.distributions.gaussian module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn-lib-distributions-poisson-module">dpnn_lib.distributions.poisson module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn-lib-distributions-transformer-module">dpnn_lib.distributions.transformer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.dirichlet">dpnn_lib.distributions.dirichlet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution"><code class="docutils literal notranslate"><span class="pre">DirichletDistribution</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.combine"><code class="docutils literal notranslate"><span class="pre">DirichletDistribution.combine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.log_prob"><code class="docutils literal notranslate"><span class="pre">DirichletDistribution.log_prob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.sample"><code class="docutils literal notranslate"><span class="pre">DirichletDistribution.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.gaussian">dpnn_lib.distributions.gaussian module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution"><code class="docutils literal notranslate"><span class="pre">GaussianDistribution</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution.combine"><code class="docutils literal notranslate"><span class="pre">GaussianDistribution.combine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution.log_prob"><code class="docutils literal notranslate"><span class="pre">GaussianDistribution.log_prob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution.sample"><code class="docutils literal notranslate"><span class="pre">GaussianDistribution.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.poisson">dpnn_lib.distributions.poisson module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution"><code class="docutils literal notranslate"><span class="pre">PoissonDistribution</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution.combine"><code class="docutils literal notranslate"><span class="pre">PoissonDistribution.combine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution.log_prob"><code class="docutils literal notranslate"><span class="pre">PoissonDistribution.log_prob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution.sample"><code class="docutils literal notranslate"><span class="pre">PoissonDistribution.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.transformer">dpnn_lib.distributions.transformer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.transformer.DistTransformer"><code class="docutils literal notranslate"><span class="pre">DistTransformer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.transformer.DistTransformer.forward"><code class="docutils literal notranslate"><span class="pre">DistTransformer.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions">Module contents</a></li>
 </ul>
 </li>
@@ -158,8 +224,21 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dpnn_lib.layers.html">dpnn_lib.layers package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#dpnn-lib-layers-layer-module">dpnn_lib.layers.layer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#dpnn-lib-layers-network-module">dpnn_lib.layers.network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#module-dpnn_lib.layers.layer">dpnn_lib.layers.layer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.layers.html#dpnn_lib.layers.layer.DistributionLayer"><code class="docutils literal notranslate"><span class="pre">DistributionLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.layers.html#dpnn_lib.layers.layer.DistributionLayer.forward"><code class="docutils literal notranslate"><span class="pre">DistributionLayer.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#module-dpnn_lib.layers.network">dpnn_lib.layers.network module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.layers.html#dpnn_lib.layers.network.DistributionNetwork"><code class="docutils literal notranslate"><span class="pre">DistributionNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.layers.html#dpnn_lib.layers.network.DistributionNetwork.forward"><code class="docutils literal notranslate"><span class="pre">DistributionNetwork.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.layers.html#dpnn_lib.layers.network.DistributionNetwork.get_output"><code class="docutils literal notranslate"><span class="pre">DistributionNetwork.get_output()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html#module-dpnn_lib.layers">Module contents</a></li>
 </ul>
 </li>
@@ -172,8 +251,20 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#dpnn-lib-models-dirichlet-denoiser-module">dpnn_lib.models.dirichlet_denoiser module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#dpnn-lib-models-poisson-denoiser-module">dpnn_lib.models.poisson_denoiser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#module-dpnn_lib.models.dirichlet_denoiser">dpnn_lib.models.dirichlet_denoiser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.models.html#dpnn_lib.models.dirichlet_denoiser.DirichletDenoiser"><code class="docutils literal notranslate"><span class="pre">DirichletDenoiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.models.html#dpnn_lib.models.dirichlet_denoiser.DirichletDenoiser.forward"><code class="docutils literal notranslate"><span class="pre">DirichletDenoiser.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#module-dpnn_lib.models.poisson_denoiser">dpnn_lib.models.poisson_denoiser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.models.html#dpnn_lib.models.poisson_denoiser.PoissonDenoiser"><code class="docutils literal notranslate"><span class="pre">PoissonDenoiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.models.html#dpnn_lib.models.poisson_denoiser.PoissonDenoiser.forward"><code class="docutils literal notranslate"><span class="pre">PoissonDenoiser.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html#module-dpnn_lib.models">Module contents</a></li>
 </ul>
 </li>
@@ -186,8 +277,24 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#dpnn-lib-utils-metrics-module">dpnn_lib.utils.metrics module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#dpnn-lib-utils-optim-module">dpnn_lib.utils.optim module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#module-dpnn_lib.utils.metrics">dpnn_lib.utils.metrics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics"><code class="docutils literal notranslate"><span class="pre">Metrics</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.accuracy"><code class="docutils literal notranslate"><span class="pre">Metrics.accuracy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.kl_divergence"><code class="docutils literal notranslate"><span class="pre">Metrics.kl_divergence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.perplexity"><code class="docutils literal notranslate"><span class="pre">Metrics.perplexity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.visualize_distribution"><code class="docutils literal notranslate"><span class="pre">Metrics.visualize_distribution()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#module-dpnn_lib.utils.optim">dpnn_lib.utils.optim module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.optim.DistributionOptimizer"><code class="docutils literal notranslate"><span class="pre">DistributionOptimizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.optim.DistributionOptimizer.loss_fn"><code class="docutils literal notranslate"><span class="pre">DistributionOptimizer.loss_fn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnn_lib.utils.html#dpnn_lib.utils.optim.DistributionOptimizer.step"><code class="docutils literal notranslate"><span class="pre">DistributionOptimizer.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html#module-dpnn_lib.utils">Module contents</a></li>
 </ul>
 </li>
@@ -203,8 +310,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-left" title="DPNN Library API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnn_lib.cells.html" class="btn btn-neutral float-right" title="dpnn_lib.cells package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnn_lib.utils.html" class="btn btn-neutral float-left" title="dpnn_lib.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
