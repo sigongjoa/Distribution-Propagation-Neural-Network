@@ -29,30 +29,28 @@ class SecureModel(nn.Module):
         self.output_shape = (1, output_dim)
 
     def forward(self, x_plain_input: Tensor) -> ts.CKKSVector:
-        # 1. Watermark input (optional, but good for demonstrating input integrity)
-        # For this PoC, we'll watermark the output of the internal model.
-        
-        # 2. Encrypt input
-        # The input to the SecureModel is assumed to be plaintext.
-        # We encrypt it here to simulate a secure input channel.
+        # If in training mode, bypass HE for gradient flow
+        if self.training:
+            # In a real scenario, the training entity has the keys and thus can
+            # work with the plaintext model directly.
+            return self.internal_model(x_plain_input)
+
+        # In evaluation mode, enforce security measures
+        # 1. Encrypt input to simulate secure channel
         x_encrypted = self.he.encrypt(x_plain_input)
         
-        # 3. Decrypt for internal plaintext computation
-        # In a fully HE-compatible model, this step would be avoided.
+        # 2. Decrypt for internal plaintext computation
+        # This step is a simplification for the PoC.
         x_decrypted_flat = self.he.decrypt(x_encrypted)
-        x_decrypted = x_decrypted_flat.reshape(self.input_shape)
+        x_decrypted = x_decrypted_flat.reshape(x_plain_input.shape)
         
-        # 4. Internal model computation (on plaintext)
+        # 3. Internal model computation
         y_plain_output = self.internal_model(x_decrypted)
         
-        # 5. Embed watermark into the plaintext output
+        # 4. Embed watermark into the output
         y_marked_plain = self.wm.embed(y_plain_output)
         
-        # 6. Encrypt the watermarked output
+        # 5. Encrypt the final watermarked output
         y_encrypted_output = self.he.encrypt(y_marked_plain)
         
-        # 7. Verification is now done externally in the demo script
-        # assert self.wm.verify(y_decrypted_for_wm_reshaped, self.output_shape, self.watermark_id), \
-        #     "Invalid watermark detected in SecureModel output!"
-            
         return y_encrypted_output
