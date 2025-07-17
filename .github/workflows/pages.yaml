@@ -26,12 +26,14 @@ jobs:
         $(which python) -c "import sphinx; print(sphinx.__file__)"
     - name: Generate API docs
       run: |
+        # Get the site-packages path where sphinx is installed
+        SITE_PACKAGES_PATH=$(python -c "import site; print(site.getsitepackages()[0])")
         # Get the directory of the python executable
         PYTHON_BIN_DIR=$(dirname $(which python))
         # Construct the full path to sphinx-apidoc executable
         SPHINX_APIDOC_EXEC="$PYTHON_BIN_DIR/sphinx-apidoc"
-        # Execute sphinx-apidoc using its full path
-        PYTHONPATH=$GITHUB_WORKSPACE "$SPHINX_APIDOC_EXEC" -o docs/ dpnn_lib
+        # Execute sphinx-apidoc using its full path, ensuring site-packages is on PYTHONPATH
+        PYTHONPATH=$GITHUB_WORKSPACE:$SITE_PACKAGES_PATH "$SPHINX_APIDOC_EXEC" -o docs/ dpnn_lib
     - name: Build documentation
       run: |
         sphinx-build -b html docs/ docs/_build/html
