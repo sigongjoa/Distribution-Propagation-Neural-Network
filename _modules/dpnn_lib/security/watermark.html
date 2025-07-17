@@ -1,0 +1,164 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.security.watermark &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.security.watermark</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.security.watermark의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<div class="viewcode-block" id="WatermarkManager">
+<a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WatermarkManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">watermark_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span> <span class="o">=</span> <span class="n">watermark_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span> <span class="o">=</span> <span class="mi">32</span>  <span class="c1"># SHA256 produces a 32-byte hash</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_watermark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a watermark based on the tensor content and watermark_id.&quot;&quot;&quot;</span>
+        <span class="c1"># For simplicity, we&#39;ll hash the tensor&#39;s flattened content and the watermark_id.</span>
+        <span class="c1"># In a real scenario, this would be more sophisticated.</span>
+        <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+        <span class="c1"># Detach the tensor from the computation graph before converting to numpy</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="c1"># Convert hash digest to a torch tensor of appropriate dtype</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># Use float32 to match common tensor dtypes</span>
+
+<div class="viewcode-block" id="WatermarkManager.embed">
+<a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager.embed">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Embeds a watermark into the tensor by overwriting a portion of it.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor too small to embed watermark. Requires at least </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="si">}</span><span class="s2"> elements.&quot;</span><span class="p">)</span>
+
+        <span class="n">original_shape</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">flat_tensor</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">watermark</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark</span><span class="p">(</span><span class="n">flat_tensor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:])</span> <span class="c1"># Generate watermark from the data part</span>
+        
+        <span class="c1"># Overwrite the first `hash_length` elements with the watermark</span>
+        <span class="c1"># Ensure watermark dtype matches tensor dtype</span>
+        <span class="n">marked_flat_tensor</span> <span class="o">=</span> <span class="n">flat_tensor</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">marked_flat_tensor</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">watermark</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">marked_flat_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">marked_flat_tensor</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WatermarkManager.verify">
+<a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager.verify">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifies the watermark in the tensor.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span> <span class="c1"># Cannot verify if tensor is too small</span>
+
+        <span class="n">flat_marked_tensor</span> <span class="o">=</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="c1"># Extract the embedded watermark (first `hash_length` elements)</span>
+        <span class="n">extracted_watermark</span> <span class="o">=</span> <span class="n">flat_marked_tensor</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">]</span>
+        
+        <span class="c1"># Generate the expected watermark from the rest of the tensor data</span>
+        <span class="c1"># This assumes the watermark was embedded by overwriting the beginning.</span>
+        <span class="n">data_part</span> <span class="o">=</span> <span class="n">flat_marked_tensor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:]</span>
+        <span class="n">expected_watermark</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark</span><span class="p">(</span><span class="n">data_part</span><span class="p">)</span>
+        
+        <span class="c1"># Compare the extracted and expected watermarks</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">extracted_watermark</span><span class="p">,</span> <span class="n">expected_watermark</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">extracted_watermark</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

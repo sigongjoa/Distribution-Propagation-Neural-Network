@@ -1,21 +1,29 @@
-dpnn\_lib.security package
+dpnn_lib.security package
 ==========================
 
 Submodules
 ----------
 
-dpnn\_lib.security.security\_cell module
-----------------------------------------
+dpnn_lib.security.crypto module
+-------------------------------
+
+.. automodule:: dpnn_lib.security.crypto
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dpnn_lib.security.security_cell module
+--------------------------------------
 
 .. automodule:: dpnn_lib.security.security_cell
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpnn\_lib.security.transformer module
--------------------------------------
+dpnn_lib.security.watermark module
+----------------------------------
 
-.. automodule:: dpnn_lib.security.transformer
+.. automodule:: dpnn_lib.security.watermark
    :members:
    :show-inheritance:
    :undoc-members:
