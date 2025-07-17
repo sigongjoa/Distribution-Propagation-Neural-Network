@@ -127,20 +127,37 @@
 <dt class="sig sig-object py" id="dpnn_lib.distributions.base.BaseDistribution">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.base.</span></span><span class="sig-name descname"><span class="pre">BaseDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/base.html#BaseDistribution"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.base.BaseDistribution" title="Link to this definition"></a></dt>
 <dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>모든 확률 분포의 추상 베이스 클래스입니다.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnn_lib.distributions.base.BaseDistribution.combine">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/base.html#BaseDistribution.combine"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.base.BaseDistribution.combine" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>다른 분포와 결합하는 추상 메소드입니다.
+하위 클래스에서 구현해야 합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 결합할 다른 분포.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnn_lib.distributions.base.BaseDistribution.log_prob">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/base.html#BaseDistribution.log_prob"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.base.BaseDistribution.log_prob" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>주어진 값에 대한 로그 확률을 계산하는 추상 메소드입니다.
+하위 클래스에서 구현해야 합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – 로그 확률을 계산할 값.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnn_lib.distributions.base.BaseDistribution.sample">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/base.html#BaseDistribution.sample"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.base.BaseDistribution.sample" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>분포에서 샘플을 생성하는 추상 메소드입니다.
+하위 클래스에서 구현해야 합니다.</p>
+</dd></dl>
 
 </dd></dl>
 
