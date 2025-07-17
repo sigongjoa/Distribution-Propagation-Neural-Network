@@ -32,6 +32,9 @@ autodoc_default_options = {
     'show-inheritance': True,
 }
 
+# Mock imports for modules that might not be available during docs build
+autodoc_mock_imports = ["torch", "numpy", "scipy", "transformer_components"]
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
