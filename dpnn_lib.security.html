@@ -55,19 +55,14 @@
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">dpnn_lib.security package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.security.crypto">dpnn_lib.security.crypto module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.security.crypto.HEManager"><code class="docutils literal notranslate"><span class="pre">HEManager</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.security.security_cell">dpnn_lib.security.security_cell module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.security.security_cell.SecurityCell"><code class="docutils literal notranslate"><span class="pre">SecurityCell</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#dpnn-lib-security-crypto-module">dpnn_lib.security.crypto module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dpnn-lib-security-security-cell-module">dpnn_lib.security.security_cell module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dpnn-lib-security-secure-model-module">dpnn_lib.security.secure_model module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.security.watermark">dpnn_lib.security.watermark module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.security.watermark.WatermarkManager"><code class="docutils literal notranslate"><span class="pre">WatermarkManager</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.security">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
@@ -103,73 +98,156 @@
              
   <section id="dpnn-lib-security-package">
 <h1>dpnn_lib.security package<a class="headerlink" href="#dpnn-lib-security-package" title="Link to this heading"></a></h1>
+<p>The <cite>dpnn_lib.security</cite> package provides foundational components for integrating
+homomorphic encryption (HE) and watermarking into neural network operations.
+This package aims to demonstrate the conceptual framework for building secure
+and traceable deep learning models, particularly focusing on protecting model
+inputs/outputs and ensuring model integrity.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-dpnn_lib.security.crypto">
-<span id="dpnn-lib-security-crypto-module"></span><h2>dpnn_lib.security.crypto module<a class="headerlink" href="#module-dpnn_lib.security.crypto" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="dpnn_lib.security.crypto.HEManager">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.security.crypto.</span></span><span class="sig-name descname"><span class="pre">HEManager</span></span><a class="reference internal" href="_modules/dpnn_lib/security/crypto.html#HEManager"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.crypto.HEManager" title="Link to this definition"></a></dt>
-<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Placeholder for Homomorphic Encryption (HE) operations.
-In a real implementation, this would integrate with a library like PySEAL or TenSEAL.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnn_lib.security.crypto.HEManager.decrypt">
-<span class="sig-name descname"><span class="pre">decrypt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cipher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/crypto.html#HEManager.decrypt"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.crypto.HEManager.decrypt" title="Link to this definition"></a></dt>
-<dd><p>Decrypts a cipher tensor. For PoC, returns the tensor as is.
-In a real HE system, this would take a CipherTensor and return a plain tensor.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnn_lib.security.crypto.HEManager.encrypt">
-<span class="sig-name descname"><span class="pre">encrypt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/crypto.html#HEManager.encrypt"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.crypto.HEManager.encrypt" title="Link to this definition"></a></dt>
-<dd><p>Encrypts a plain tensor. For PoC, returns the tensor as is.
-In a real HE system, this would return a CipherTensor.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="dpnn-lib-security-crypto-module">
+<h2>dpnn_lib.security.crypto module<a class="headerlink" href="#dpnn-lib-security-crypto-module" title="Link to this heading"></a></h2>
+<p>The <cite>crypto</cite> module provides a conceptual interface for Homomorphic Encryption (HE)
+operations. It leverages the TenSEAL library to perform approximate encryption
+and decryption of tensors, simulating a secure computation environment.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p><strong>`HEManager` Class:</strong> Manages the TenSEAL CKKS context, including parameter
+setup (polynomial modulus degree, coefficient modulus bit sizes, global scale)
+and key generation.</p></li>
+<li><p><strong>`encrypt(plain: torch.Tensor) -&gt; tenseal.CKKSVector`:</strong> Encrypts a PyTorch
+tensor into a TenSEAL CKKSVector. For simplicity in this PoC, tensors are
+flattened before encryption.</p></li>
+<li><p><strong>`decrypt(cipher: tenseal.CKKSVector) -&gt; torch.Tensor`:</strong> Decrypts a TenSEAL
+CKKSVector back into a PyTorch tensor. Due to the nature of HE, decryption
+yields an approximate result, and the original shape information needs to be
+managed externally.</p></li>
+</ul>
+<p><strong>Note on PoC Implementation:</strong>
+While <cite>HEManager</cite> uses TenSEAL for actual HE operations, the current integration
+within <cite>SecurityCell</cite> and <cite>SecureModel</cite> involves decryption for internal plaintext
+computation. A fully HE-compatible model would perform computations directly
+on encrypted data, which is a more advanced and complex topic.</p>
 </section>
-<section id="module-dpnn_lib.security.security_cell">
-<span id="dpnn-lib-security-security-cell-module"></span><h2>dpnn_lib.security.security_cell module<a class="headerlink" href="#module-dpnn_lib.security.security_cell" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="dpnn_lib.security.security_cell.SecurityCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.security.security_cell.</span></span><span class="sig-name descname"><span class="pre">SecurityCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/security/security_cell.html#SecurityCell"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.security_cell.SecurityCell" title="Link to this definition"></a></dt>
-<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>보안 특화 셀: 내부 연산 전에 입력 암호화·워터마크 검증,
-연산 후 복호화·워터마크 재주입을 수행합니다.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnn_lib.security.security_cell.SecurityCell.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/security_cell.html#SecurityCell.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.security_cell.SecurityCell.forward" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="dpnn-lib-security-security-cell-module">
+<h2>dpnn_lib.security.security_cell module<a class="headerlink" href="#dpnn-lib-security-security-cell-module" title="Link to this heading"></a></h2>
+<p>The <cite>security_cell</cite> module defines the <cite>SecurityCell</cite> class, a specialized
+neural network cell designed to integrate security features (encryption and
+watermarking) around a base neural network layer. It acts as a wrapper that
+enforces security policies during the forward pass.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p><strong>Input Encryption/Decryption:</strong> Encrypts the input before passing it to the
+<cite>base_cell</cite> and decrypts the output for watermarking and re-encryption.
+(Note: In this PoC, internal <cite>base_cell</cite> operations are on plaintext).</p></li>
+<li><p><strong>Output Watermarking:</strong> Embeds a unique watermark pattern into the plaintext
+output of the <cite>base_cell</cite> before final encryption.</p></li>
+<li><p><strong>Watermark Verification:</strong> Verifies the presence and integrity of the watermark
+in the decrypted output. If the watermark is invalid or tampered with, an
+<cite>AssertionError</cite> is raised, preventing unauthorized processing.</p></li>
+<li><p><strong>`__init__(base_cell: nn.Module, watermark_id: str, input_shape: tuple, secret_key: str)`:</strong>
+Initializes the <cite>SecurityCell</cite> with a base neural network module, a unique
+watermark identifier, the expected input shape, and a secret key for watermarking.</p></li>
+<li><p><strong>`forward(x_plain_input: torch.Tensor) -&gt; tenseal.CKKSVector`:</strong>
+Processes a plaintext input tensor. It performs watermarking, encryption,
+passes data through the base cell (conceptually decrypted), re-watermarks,
+re-encrypts, and verifies the watermark before returning an encrypted output.</p></li>
+</ul>
+<p><strong>Role in Secure Pipeline:</strong>
+<cite>SecurityCell</cite> serves as a building block for constructing secure neural networks,
+ensuring that data processed through it adheres to defined security policies
+and that the model’s output is traceable.</p>
+</section>
+<section id="dpnn-lib-security-secure-model-module">
+<h2>dpnn_lib.security.secure_model module<a class="headerlink" href="#dpnn-lib-security-secure-model-module" title="Link to this heading"></a></h2>
+<p>The <cite>secure_model</cite> module introduces the <cite>SecureModel</cite> class, which represents
+a conceptual end-to-end secure neural network. It demonstrates how Homomorphic
+Encryption and watermarking can be applied at the boundaries of an entire model,
+rather than at each individual layer.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p><strong>Boundary Security:</strong> Encrypts the model’s input and watermarks/encrypts its
+final output. This simulates a scenario where data is secured during
+transmission or storage, while internal model computations might occur
+in a less secure (plaintext) environment for performance reasons.</p></li>
+<li><p><strong>Internal Plaintext Computation:</strong> For simplicity and to avoid the complexities
+of HE-compatible non-linear activations, the <cite>internal_model</cite> (a standard
+PyTorch <cite>nn.Sequential</cite> model) operates on decrypted data.</p></li>
+<li><p><strong>End-to-End Flow Demonstration:</strong> Provides a clear example of the data flow
+from plaintext input, through encryption, model processing, watermarking,
+and encrypted output, with external verification.</p></li>
+<li><p><strong>`__init__(input_dim: int, hidden_dim: int, output_dim: int, watermark_id: str, secret_key: str)`:</strong>
+Initializes the <cite>SecureModel</cite> with network dimensions, a watermark identifier,
+and a secret key.</p></li>
+<li><p><strong>`forward(x_plain_input: torch.Tensor) -&gt; tenseal.CKKSVector`:</strong>
+Takes a plaintext input, encrypts it, decrypts for internal processing,
+passes through the internal model, watermarks the output, and then encrypts
+the final watermarked output.</p></li>
+</ul>
+<p><strong>Conceptual Significance:</strong>
+<cite>SecureModel</cite> illustrates a practical approach for securing neural networks
+where full homomorphic encryption of all operations is not feasible or
+performant. It highlights the trade-offs and design considerations for
+implementing security at different levels of a deep learning pipeline.</p>
 </section>
 <section id="module-dpnn_lib.security.watermark">
 <span id="dpnn-lib-security-watermark-module"></span><h2>dpnn_lib.security.watermark module<a class="headerlink" href="#module-dpnn_lib.security.watermark" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpnn_lib.security.watermark.WatermarkManager">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.security.watermark.</span></span><span class="sig-name descname"><span class="pre">WatermarkManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">watermark_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.security.watermark.</span></span><span class="sig-name descname"><span class="pre">WatermarkManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">watermark_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default_secret_key'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager" title="Link to this definition"></a></dt>
 <dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages watermark embedding and verification.
+For PoC, uses a simple fixed pattern for embedding and direct comparison for verification.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnn_lib.security.watermark.WatermarkManager.embed">
-<span class="sig-name descname"><span class="pre">embed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager.embed"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager.embed" title="Link to this definition"></a></dt>
-<dd><p>Embeds a watermark into the tensor by overwriting a portion of it.</p>
+<span class="sig-name descname"><span class="pre">embed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plain_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager.embed"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager.embed" title="Link to this definition"></a></dt>
+<dd><p>Embeds a watermark into the plaintext tensor by setting a fixed pattern
+in the first few elements.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnn_lib.security.watermark.WatermarkManager.verify">
-<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marked_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager.verify"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager.verify" title="Link to this definition"></a></dt>
-<dd><p>Verifies the watermark in the tensor.</p>
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marked_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_input_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_watermark_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dpnn_lib/security/watermark.html#WatermarkManager.verify"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.security.watermark.WatermarkManager.verify" title="Link to this definition"></a></dt>
+<dd><p>Verifies the presence of the watermark in the marked_tensor.
+Checks if the fixed pattern is present in the expected location.
+Includes a check for the expected watermark ID.</p>
 </dd></dl>
 
 </dd></dl>
 
+<p>The <cite>watermark</cite> module provides the <cite>WatermarkManager</cite> class, responsible for
+embedding and verifying digital watermarks within tensors. For this Proof-of-Concept,
+a simplified watermarking technique is employed, focusing on demonstrating the
+concept of traceability and tamper detection rather than cryptographic robustness.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p><strong>`WatermarkManager` Class:</strong> Manages the generation, embedding, and verification
+of watermark patterns.</p></li>
+<li><p><strong>`_generate_watermark_pattern(shape: tuple) -&gt; torch.Tensor`:</strong> Generates a
+pseudo-random watermark pattern based on a <cite>watermark_id</cite> and <cite>secret_key</cite>.
+This ensures a unique pattern for each model or user.</p></li>
+<li><p><strong>`embed(plain_tensor: torch.Tensor) -&gt; torch.Tensor`:</strong> Embeds the watermark
+into a plaintext tensor by subtly modifying a fixed portion of its elements.
+The <cite>strength</cite> parameter controls the visibility of the watermark.</p></li>
+<li><p><strong>`verify(marked_tensor: torch.Tensor, original_input_shape: tuple, expected_watermark_id: str, threshold: float)`:</strong>
+Verifies the presence of the watermark by comparing an extracted pattern
+from the <cite>marked_tensor</cite> with the expected pattern. It also checks if the
+<cite>WatermarkManager</cite> instance’s <cite>watermark_id</cite> matches the <cite>expected_watermark_id</cite>,
+providing a conceptual ID-based verification.
+A correlation-based threshold is used for detection.</p></li>
+</ul>
+<p><strong>Limitations in PoC:</strong>
+The current watermarking method is a simplified noise-addition technique.
+It is <strong>not cryptographically robust</strong> against sophisticated attacks (e.g.,
+watermark removal, adversarial attacks, or model extraction). Real-world
+applications would require significantly more advanced and robust watermarking
+algorithms that can survive various neural network transformations and attacks.
+This implementation serves to illustrate the <em>mechanism</em> of embedding and
+verifying a watermark within the secure pipeline.</p>
 </section>
-<section id="module-dpnn_lib.security">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpnn_lib.security" title="Link to this heading"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 

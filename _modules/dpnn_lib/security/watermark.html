@@ -77,59 +77,98 @@
 <div class="viewcode-block" id="WatermarkManager">
 <a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager">[문서]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WatermarkManager</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">watermark_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages watermark embedding and verification.</span>
+<span class="sd">    For PoC, uses a simple fixed pattern for embedding and direct comparison for verification.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">watermark_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default_secret_key&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span> <span class="o">=</span> <span class="n">watermark_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span> <span class="o">=</span> <span class="mi">32</span>  <span class="c1"># SHA256 produces a 32-byte hash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="n">secret_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span> <span class="o">=</span> <span class="mi">16</span> <span class="c1"># Size of the fixed pattern to embed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">watermark_value</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># The value to embed as a watermark</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_watermark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a watermark based on the tensor content and watermark_id.&quot;&quot;&quot;</span>
-        <span class="c1"># For simplicity, we&#39;ll hash the tensor&#39;s flattened content and the watermark_id.</span>
-        <span class="c1"># In a real scenario, this would be more sophisticated.</span>
-        <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
-        <span class="c1"># Detach the tensor from the computation graph before converting to numpy</span>
-        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
-        <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="c1"># Convert hash digest to a torch tensor of appropriate dtype</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">hasher</span><span class="o">.</span><span class="n">digest</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># Use float32 to match common tensor dtypes</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_watermark_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a pseudo-random watermark pattern based on watermark_id and secret_key.</span>
+<span class="sd">        The pattern will have the specified shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">seed_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">seed_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        
+        <span class="c1"># Generate a random tensor of the given shape</span>
+        <span class="n">watermark_pattern</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">watermark_pattern</span>
 
 <div class="viewcode-block" id="WatermarkManager.embed">
 <a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager.embed">[문서]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Embeds a watermark into the tensor by overwriting a portion of it.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor too small to embed watermark. Requires at least </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="si">}</span><span class="s2"> elements.&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plain_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Embeds a watermark into the plaintext tensor by setting a fixed pattern</span>
+<span class="sd">        in the first few elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">plain_tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor too small to embed watermark. Requires at least </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="si">}</span><span class="s2"> elements.&quot;</span><span class="p">)</span>
 
-        <span class="n">original_shape</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">flat_tensor</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">watermark</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark</span><span class="p">(</span><span class="n">flat_tensor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:])</span> <span class="c1"># Generate watermark from the data part</span>
+        <span class="n">marked_tensor</span> <span class="o">=</span> <span class="n">plain_tensor</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="c1"># Flatten the tensor to embed the pattern at the beginning</span>
+        <span class="n">marked_flat</span> <span class="o">=</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         
-        <span class="c1"># Overwrite the first `hash_length` elements with the watermark</span>
-        <span class="c1"># Ensure watermark dtype matches tensor dtype</span>
-        <span class="n">marked_flat_tensor</span> <span class="o">=</span> <span class="n">flat_tensor</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="n">marked_flat_tensor</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">watermark</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">marked_flat_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="c1"># Generate a unique pattern based on watermark_id and secret_key</span>
+        <span class="n">unique_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark_pattern</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">,))</span>
         
-        <span class="k">return</span> <span class="n">marked_flat_tensor</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span></div>
+        <span class="c1"># Embed the unique pattern</span>
+        <span class="n">marked_flat</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">unique_pattern</span>
+        
+        <span class="k">return</span> <span class="n">marked_tensor</span> <span class="c1"># Return with original shape</span></div>
 
 
 <div class="viewcode-block" id="WatermarkManager.verify">
 <a class="viewcode-back" href="../../../dpnn_lib.security.html#dpnn_lib.security.watermark.WatermarkManager.verify">[문서]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifies the watermark in the tensor.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span> <span class="c1"># Cannot verify if tensor is too small</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">original_input_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">expected_watermark_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the presence of the watermark in the marked_tensor.</span>
+<span class="sd">        Checks if the fixed pattern is present in the expected location.</span>
+<span class="sd">        Includes a check for the expected watermark ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># First, check if the watermark_id of this WatermarkManager matches the expected_watermark_id.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span> <span class="o">!=</span> <span class="n">expected_watermark_id</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Watermark verification: Mismatch in watermark_id. Expected &#39;</span><span class="si">{</span><span class="n">expected_watermark_id</span><span class="si">}</span><span class="s2">&#39;, got &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">flat_marked_tensor</span> <span class="o">=</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Watermark verification: Tensor too small to contain watermark.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Extract the potential watermark pattern from the beginning of the flattened tensor</span>
+        <span class="n">extracted_pattern</span> <span class="o">=</span> <span class="n">marked_tensor</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">]</span>
         
-        <span class="c1"># Extract the embedded watermark (first `hash_length` elements)</span>
-        <span class="n">extracted_watermark</span> <span class="o">=</span> <span class="n">flat_marked_tensor</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">]</span>
+        <span class="c1"># Generate the expected unique pattern for comparison</span>
+        <span class="n">expected_pattern_segment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark_pattern</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">watermark_pattern_size</span><span class="p">,))</span>
         
-        <span class="c1"># Generate the expected watermark from the rest of the tensor data</span>
-        <span class="c1"># This assumes the watermark was embedded by overwriting the beginning.</span>
-        <span class="n">data_part</span> <span class="o">=</span> <span class="n">flat_marked_tensor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_length</span><span class="p">:]</span>
-        <span class="n">expected_watermark</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_watermark</span><span class="p">(</span><span class="n">data_part</span><span class="p">)</span>
+        <span class="c1"># Debug print to confirm sizes</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Debug: extracted_pattern.shape = </span><span class="si">{</span><span class="n">extracted_pattern</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, expected_pattern_segment.shape = </span><span class="si">{</span><span class="n">expected_pattern_segment</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compare the extracted pattern with the expected pattern</span>
+        <span class="c1"># Using cosine similarity for a more robust comparison than strict equality</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-8</span>
         
-        <span class="c1"># Compare the extracted and expected watermarks</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">extracted_watermark</span><span class="p">,</span> <span class="n">expected_watermark</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">extracted_watermark</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+        <span class="c1"># Check for zero norm to prevent division by zero</span>
+        <span class="n">norm_extracted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">extracted_pattern</span><span class="p">)</span>
+        <span class="n">norm_expected</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">expected_pattern_segment</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">norm_extracted</span> <span class="o">&lt;</span> <span class="n">epsilon</span> <span class="ow">or</span> <span class="n">norm_expected</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+            <span class="n">correlation</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># Or handle as an error case</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">correlation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">extracted_pattern</span><span class="p">,</span> <span class="n">expected_pattern_segment</span><span class="p">)</span> <span class="o">/</span> \
+                          <span class="p">(</span><span class="n">norm_extracted</span> <span class="o">*</span> <span class="n">norm_expected</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">)</span>
+        
+        <span class="c1"># Explicitly convert to string to avoid formatting issues</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Watermark verification (ID: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">watermark_id</span> <span class="o">+</span> <span class="s2">&quot;): Correlation = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">correlation</span><span class="o">.</span><span class="n">item</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;, Threshold = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">threshold</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">correlation</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">threshold</span></div>
 </div>
 
 </pre></div>
