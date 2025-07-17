@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to DPNN’s documentation! &mdash; DPNN  문서</title>
+  <title>dpnn_lib.utils package &mdash; DPNN  문서</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="색인" href="genindex.html" />
     <link rel="search" title="검색" href="search.html" />
-    <link rel="next" title="DPNN Library API" href="modules.html" /> 
+    <link rel="prev" title="dpnn_lib.security package" href="dpnn_lib.security.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +31,7 @@
 
           
           
-          <a href="#" class="icon icon-home">
+          <a href="index.html" class="icon icon-home">
             DPNN
           </a>
 <div role="search">
@@ -43,8 +43,22 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">DPNN Library API</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">DPNN Library API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpnn_lib.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dpnn-lib-utils-metrics-module">dpnn_lib.utils.metrics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dpnn-lib-utils-optim-module">dpnn_lib.utils.optim module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -53,17 +67,19 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">DPNN</a>
+          <a href="index.html">DPNN</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to DPNN’s documentation!</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">DPNN Library API</a></li>
+          <li class="breadcrumb-item"><a href="dpnn_lib.html">dpnn_lib package</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.utils package</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/dpnn_lib.utils.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -71,37 +87,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-dpnns-documentation">
-<h1>Welcome to DPNN’s documentation!<a class="headerlink" href="#welcome-to-dpnns-documentation" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">DPNN Library API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.html">dpnn_lib package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
-</ul>
-</li>
-</ul>
-</div>
+  <section id="dpnn-lib-utils-package">
+<h1>dpnn_lib.utils package<a class="headerlink" href="#dpnn-lib-utils-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">색인</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">모듈 목록</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">검색 페이지</span></a></p></li>
-</ul>
+<section id="dpnn-lib-utils-metrics-module">
+<h2>dpnn_lib.utils.metrics module<a class="headerlink" href="#dpnn-lib-utils-metrics-module" title="Link to this heading"></a></h2>
+</section>
+<section id="dpnn-lib-utils-optim-module">
+<h2>dpnn_lib.utils.optim module<a class="headerlink" href="#dpnn-lib-utils-optim-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-dpnn_lib.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpnn_lib.utils" title="Link to this heading"></a></h2>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="DPNN Library API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnn_lib.security.html" class="btn btn-neutral float-left" title="dpnn_lib.security package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
