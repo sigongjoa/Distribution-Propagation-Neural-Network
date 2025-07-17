@@ -1,7 +1,8 @@
 import os
 import sys
 
-# dpnn_lib 경로 추가
+# Add the project root directory to sys.path to make dpnn_lib discoverable by Sphinx.
+# This is crucial for autodoc to find and document modules within dpnn_lib.
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
@@ -15,9 +16,9 @@ author = 'Your Name'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.autodoc',  # Automatically extract documentation from docstrings.
+    'sphinx.ext.napoleon', # Support for Google and NumPy style docstrings.
+    'sphinx.ext.viewcode', # Add links to highlighted source code.
 ]
 
 templates_path = ['_templates']
@@ -25,14 +26,15 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 language = 'ko'
 
-# Autodoc configuration
+# Autodoc configuration: Defines default options for how autodoc extracts information.
 autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'show-inheritance': True,
+    'members': True,         # Document all public members (functions, classes, methods).
+    'undoc-members': True,   # Document members without docstrings.
+    'show-inheritance': True,# Show inheritance hierarchy for classes.
 }
 
-# Mock imports for modules that might not be available during docs build
+# Mock imports for modules that might not be available during docs build.
+# This prevents Sphinx from failing if these packages are not installed in the build environment.
 autodoc_mock_imports = ["torch", "numpy", "scipy", "transformer_components"]
 
 # -- Options for HTML output -------------------------------------------------
@@ -40,5 +42,3 @@ autodoc_mock_imports = ["torch", "numpy", "scipy", "transformer_components"]
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-
-
