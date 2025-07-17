@@ -26,12 +26,10 @@ jobs:
         $(which python) -c "import sphinx; print(sphinx.__file__)"
     - name: Generate API docs
       run: |
-        # Get the site-packages path where sphinx is installed
-        SITE_PACKAGES_PATH=$(python -c "import site; print(site.getsitepackages()[0])")
-        # Construct the full path to sphinx/apidoc.py
-        SPHINX_APIDOC_SCRIPT="$SITE_PACKAGES_PATH/sphinx/apidoc.py"
-        # Execute apidoc.py using the python executable, ensuring site-packages is on PYTHONPATH
-        PYTHONPATH=$GITHUB_WORKSPACE:$SITE_PACKAGES_PATH $(which python) "$SPHINX_APIDOC_SCRIPT" -o docs/ dpnn_lib
+        # Ensure the project root is on PYTHONPATH for dpnn_lib discovery
+        export PYTHONPATH=$GITHUB_WORKSPACE
+        # Directly call sphinx.apidoc.main()
+        $(which python) -c "from sphinx import apidoc; apidoc.main(['-o', 'docs/', 'dpnn_lib'])"
     - name: Build documentation
       run: |
         sphinx-build -b html docs/ docs/_build/html
