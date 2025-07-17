@@ -20,7 +20,7 @@ jobs:
         python -m pip install sphinx sphinx-rtd-theme
     - name: Generate API docs
       run: |
-        PYTHONPATH=$GITHUB_WORKSPACE python -m sphinx.apidoc -o docs/ dpnn_lib
+        PYTHONPATH=$GITHUB_WORKSPACE sphinx-apidoc -o docs/ dpnn_lib
     - name: Build documentation
       run: |
         sphinx-build -b html docs/ docs/_build/html
