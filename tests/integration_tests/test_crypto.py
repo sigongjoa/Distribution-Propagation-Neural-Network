@@ -9,5 +9,5 @@ def test_he_encrypt_decrypt_consistency():
     encrypted_tensor = he.encrypt(original_tensor)
     decrypted_tensor = he.decrypt(encrypted_tensor)
     
-    # For the PoC, encrypt/decrypt are no-ops, so tensors should be equal
-    assert torch.equal(original_tensor, decrypted_tensor), "Encryption/decryption should be consistent for PoC!"
+    # For TenSEAL, decryption is approximate, so use torch.allclose
+    assert torch.allclose(original_tensor.flatten(), decrypted_tensor, atol=1e-2), "Encryption/decryption should be consistent within tolerance!"

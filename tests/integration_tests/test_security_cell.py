@@ -4,44 +4,65 @@ from torch import nn
 from dpnn_lib.security.security_cell import SecurityCell
 from dpnn_lib.security.watermark import WatermarkManager
 from dpnn_lib.security.crypto import HEManager
+import tenseal as ts
 
 class DummyCell(nn.Module):
-    def __init__(self):
+    def __init__(self, input_dim=16, output_dim=16):
         super().__init__()
-        self.linear = nn.Linear(16, 16)
+        self.linear = nn.Linear(input_dim, output_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
 
 def test_security_cell_forward_valid_input():
-    base_cell = DummyCell()
-    sec_cell = SecurityCell(base_cell, watermark_id="model-v1")
+    input_shape = (8, 16)
+    base_cell = DummyCell(input_dim=input_shape[-1], output_dim=input_shape[-1])
+    watermark_id = "model-v1"
+    secret_key = "test_secret"
+    sec_cell = SecurityCell(base_cell, watermark_id=watermark_id, input_shape=input_shape, secret_key=secret_key)
     
-    wm = WatermarkManager("model-v1")
     he = HEManager()
+    wm_verifier = WatermarkManager(watermark_id, secret_key=secret_key)
     
-    x_plain = torch.randn(8, 16, dtype=torch.float32)
-    x_enc = he.encrypt(x_plain)
-    x_marked = wm.embed(x_enc)
+    x_plain = torch.randn(input_shape, dtype=torch.float32)
     
-    y_marked = sec_cell(x_marked)
+    y_encrypted = sec_cell(x_plain)
     
-    assert wm.verify(y_marked), "Output of SecurityCell does not have a valid watermark!"
+    # Decrypt and verify outside the SecurityCell for testing
+    y_decrypted_flat = he.decrypt(y_encrypted)
+    y_decrypted_reshaped = y_decrypted_flat.reshape(input_shape)
     
-    # For PoC, check if decryption works and shape is preserved
-    y_dec = he.decrypt(y_marked)
-    assert y_dec.shape == x_plain.shape, "Output shape mismatch after security cell processing!"
+    assert wm_verifier.verify(y_decrypted_reshaped, input_shape, watermark_id), "Output of SecurityCell does not have a valid watermark!"
+    
+    # Check if decryption works and shape is preserved
+    # Use allclose for TenSEAL approximate decryption
+    # We can't directly compare y_decrypted_reshaped with x_plain because base_cell transforms it.
+    # Instead, we check if the output shape is correct.
+    assert y_decrypted_reshaped.shape == input_shape, "Output shape mismatch after security cell processing!"
 
 def test_security_cell_invalid_watermark_input():
-    base_cell = DummyCell()
-    sec_cell = SecurityCell(base_cell, watermark_id="model-v1")
+    input_shape = (8, 16)
+    base_cell = DummyCell(input_dim=input_shape[-1], output_dim=input_shape[-1])
+    correct_watermark_id = "model-v1"
+    secret_key = "test_secret"
     
-    wm_invalid = WatermarkManager("invalid-id")
+    # Initialize SecurityCell with the correct watermark ID
+    sec_cell = SecurityCell(base_cell, watermark_id=correct_watermark_id, input_shape=input_shape, secret_key=secret_key)
+    
+    # Create an input that will be processed by the SecurityCell
+    x_plain = torch.randn(input_shape, dtype=torch.float32)
+    
+    # Process the input through the SecurityCell (it will embed its own watermark)
+    y_encrypted = sec_cell(x_plain)
+    
+    # Decrypt the output
     he = HEManager()
+    y_decrypted_flat = he.decrypt(y_encrypted)
+    y_decrypted_reshaped = y_decrypted_flat.reshape(input_shape)
     
-    x_plain = torch.randn(8, 16, dtype=torch.float32)
-    x_enc = he.encrypt(x_plain)
-    x_invalid_marked = wm_invalid.embed(x_enc) # Embed with a different watermark ID
+    # Now, try to verify the output using a WatermarkManager with an *incorrect* ID
+    wm_incorrect_verifier = WatermarkManager("invalid-id", secret_key=secret_key)
     
-    with pytest.raises(AssertionError, match="Invalid watermark!"):
-        sec_cell(x_invalid_marked)
+    # This assertion should pass, as the verification with the incorrect ID should fail.
+    assert not wm_incorrect_verifier.verify(y_decrypted_reshaped, input_shape, "invalid-id"), \
+        "Verification with incorrect ID passed unexpectedly!"

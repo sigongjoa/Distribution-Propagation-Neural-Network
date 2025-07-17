@@ -2,51 +2,90 @@ import hashlib
 import torch
 
 class WatermarkManager:
-    def __init__(self, watermark_id: str):
+    """
+    Manages watermark embedding and verification.
+    For PoC, uses a simple fixed pattern for embedding and direct comparison for verification.
+    """
+    def __init__(self, watermark_id: str, secret_key: str = "default_secret_key"):
         self.watermark_id = watermark_id
-        self.hash_length = 32  # SHA256 produces a 32-byte hash
+        self.secret_key = secret_key
+        self.watermark_pattern_size = 16 # Size of the fixed pattern to embed
+        self.watermark_value = 1.0 # The value to embed as a watermark
 
-    def _generate_watermark(self, tensor: torch.Tensor) -> torch.Tensor:
-        """Generates a watermark based on the tensor content and watermark_id."""
-        # For simplicity, we'll hash the tensor's flattened content and the watermark_id.
-        # In a real scenario, this would be more sophisticated.
-        hasher = hashlib.sha256()
-        # Detach the tensor from the computation graph before converting to numpy
-        hasher.update(tensor.detach().contiguous().cpu().numpy().tobytes())
-        hasher.update(self.watermark_id.encode('utf-8'))
-        # Convert hash digest to a torch tensor of appropriate dtype
-        return torch.tensor(list(hasher.digest()), dtype=torch.float32) # Use float32 to match common tensor dtypes
+    def _generate_watermark_pattern(self, shape: tuple) -> torch.Tensor:
+        """
+        Generates a pseudo-random watermark pattern based on watermark_id and secret_key.
+        The pattern will have the specified shape.
+        """
+        seed_str = self.watermark_id + self.secret_key
+        seed = int(hashlib.sha256(seed_str.encode('utf-8')).hexdigest(), 16) % (2**32 - 1)
+        
+        torch.manual_seed(seed)
+        
+        # Generate a random tensor of the given shape
+        watermark_pattern = torch.randn(shape, dtype=torch.float32)
+        
+        return watermark_pattern
 
-    def embed(self, tensor: torch.Tensor) -> torch.Tensor:
-        """Embeds a watermark into the tensor by overwriting a portion of it."""
-        if tensor.numel() < self.hash_length:
-            raise ValueError(f"Tensor too small to embed watermark. Requires at least {self.hash_length} elements.")
+    def embed(self, plain_tensor: torch.Tensor) -> torch.Tensor:
+        """
+        Embeds a watermark into the plaintext tensor by setting a fixed pattern
+        in the first few elements.
+        """
+        if plain_tensor.numel() < self.watermark_pattern_size:
+            raise ValueError(f"Tensor too small to embed watermark. Requires at least {self.watermark_pattern_size} elements.")
 
-        original_shape = tensor.shape
-        flat_tensor = tensor.flatten()
-        watermark = self._generate_watermark(flat_tensor[self.hash_length:]) # Generate watermark from the data part
+        marked_tensor = plain_tensor.clone()
+        # Flatten the tensor to embed the pattern at the beginning
+        marked_flat = marked_tensor.flatten()
         
-        # Overwrite the first `hash_length` elements with the watermark
-        # Ensure watermark dtype matches tensor dtype
-        marked_flat_tensor = flat_tensor.clone()
-        marked_flat_tensor[:self.hash_length] = watermark.to(marked_flat_tensor.dtype)
+        # Generate a unique pattern based on watermark_id and secret_key
+        unique_pattern = self._generate_watermark_pattern((self.watermark_pattern_size,))
         
-        return marked_flat_tensor.reshape(original_shape)
+        # Embed the unique pattern
+        marked_flat[:self.watermark_pattern_size] = unique_pattern
+        
+        return marked_tensor # Return with original shape
 
-    def verify(self, marked_tensor: torch.Tensor) -> bool:
-        """Verifies the watermark in the tensor."""
-        if marked_tensor.numel() < self.hash_length:
-            return False # Cannot verify if tensor is too small
+    def verify(self, marked_tensor: torch.Tensor, original_input_shape: tuple, expected_watermark_id: str, threshold: float = 0.9) -> bool:
+        """
+        Verifies the presence of the watermark in the marked_tensor.
+        Checks if the fixed pattern is present in the expected location.
+        Includes a check for the expected watermark ID.
+        """
+        # First, check if the watermark_id of this WatermarkManager matches the expected_watermark_id.
+        if self.watermark_id != expected_watermark_id:
+            print(f"Watermark verification: Mismatch in watermark_id. Expected '{expected_watermark_id}', got '{self.watermark_id}'.")
+            return False
 
-        flat_marked_tensor = marked_tensor.flatten()
+        if marked_tensor.numel() < self.watermark_pattern_size:
+            print("Watermark verification: Tensor too small to contain watermark.")
+            return False
+
+        # Extract the potential watermark pattern from the beginning of the flattened tensor
+        extracted_pattern = marked_tensor.flatten()[:self.watermark_pattern_size]
         
-        # Extract the embedded watermark (first `hash_length` elements)
-        extracted_watermark = flat_marked_tensor[:self.hash_length]
+        # Generate the expected unique pattern for comparison
+        expected_pattern_segment = self._generate_watermark_pattern((self.watermark_pattern_size,))
         
-        # Generate the expected watermark from the rest of the tensor data
-        # This assumes the watermark was embedded by overwriting the beginning.
-        data_part = flat_marked_tensor[self.hash_length:]
-        expected_watermark = self._generate_watermark(data_part)
+        # Debug print to confirm sizes
+        print(f"Debug: extracted_pattern.shape = {extracted_pattern.shape}, expected_pattern_segment.shape = {expected_pattern_segment.shape}")
+
+        # Compare the extracted pattern with the expected pattern
+        # Using cosine similarity for a more robust comparison than strict equality
+        epsilon = 1e-8
         
-        # Compare the extracted and expected watermarks
-        return torch.equal(extracted_watermark, expected_watermark.to(extracted_watermark.dtype))
+        # Check for zero norm to prevent division by zero
+        norm_extracted = torch.norm(extracted_pattern)
+        norm_expected = torch.norm(expected_pattern_segment)
+        
+        if norm_extracted < epsilon or norm_expected < epsilon:
+            correlation = 0.0 # Or handle as an error case
+        else:
+            correlation = torch.dot(extracted_pattern, expected_pattern_segment) / \
+                          (norm_extracted * norm_expected + epsilon)
+        
+        # Explicitly convert to string to avoid formatting issues
+        print("Watermark verification (ID: " + self.watermark_id + "): Correlation = " + str(correlation.item()) + ", Threshold = " + str(threshold))
+        
+        return correlation.item() > threshold
