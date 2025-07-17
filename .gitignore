@@ -48,4 +48,4 @@ dist/
 *.whl
 
 # Sphinx documentation build output
-docs/_build_html/
+docs/_build/
