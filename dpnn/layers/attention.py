@@ -147,8 +147,11 @@ class DistSelfAttention(nn.Module):
         # 4. Softmax approximation strategy
         # logits shape assumption after split: (B,H,L_q,L_k) for scores → softmax over L_k
         logits_mu_for_topk = logits_dist.mean()  # (B,H,L_q,L_k) or (B,H,L_k) depending on your wiring
-        # 여기서는 self-attn with square L assumed: choose top-k along last dim
-        topk_idx = logits_mu_for_topk.topk(self.k_top, dim=-1).indices  # (..., K)
+        
+        # k_top 방어 로직: 시퀀스 길이(L_k)가 k_top보다 작으면 k_top을 시퀀스 길이로 제한
+        Lk = logits_mu_for_topk.size(-1)
+        k = min(self.k_top, Lk)
+        topk_idx = logits_mu_for_topk.topk(k, dim=-1).indices  # (..., K)
 
         # Top-k logits: MC/UKF (placeholder for now)
         attn_weights_top = softmax_via_samples(logits_dist, topk_idx, cfg)  # TODO: future exactify

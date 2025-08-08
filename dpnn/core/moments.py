@@ -43,7 +43,7 @@ def delta_method(mu: torch.Tensor, var: torch.Tensor, f, fprime):
 def approx_curvature(dist, nonlin) -> torch.Tensor:
     """
     비선형 함수의 곡률을 근사합니다. (예: f''(μ)의 규모)
-    이것은 실제 구현에서 더 복잡할 수 있으며, 여기서는 플레이스홀더입니다。
+    이것은 실제 구현에서 더 복잡할 수 있으며, 여기서는 플레이스홀더입니다.
     """
     # TODO: 실제 곡률 근사 로직 구현
     return torch.tensor(0.0) # Placeholder
@@ -81,28 +81,22 @@ def softmax_logit_normal(S: BaseDistribution, exclude: torch.Tensor | None = Non
     S는 로짓 분포 (예: GaussianDiag)입니다.
     exclude는 MC/UKF로 이미 처리된 인덱스입니다.
     """
-    mu = S.mean()                                 # (B,H,L)
-    var = S.var().clamp_min(1e-6)                 # (B,H,L)
-    p = F.softmax(mu, dim=-1)                     # (B,H,L)
+    mu = S.mean()                     # (..., Lk)
+    var = S.var().clamp_min(1e-6)     # (..., Lk)
+    p = F.softmax(mu, dim=-1)         # (..., Lk)
 
-    # 분산이 작을수록 “확신 높음” → α0 크게. 너무 크지 않도록 clamp.
-    inv_scale = (1.0 / var.mean(dim=-1, keepdim=True).sqrt()).clamp(1.0, 10.0)  # (B,H,1)
-    alpha = p * (inv_scale * 50.0)               # α0 대략 50~500 사이
+    inv_scale = (1.0 / var.mean(dim=-1, keepdim=True).sqrt()).clamp(1.0, 10.0)
+    alpha = p * (inv_scale * 50.0)
 
     if exclude is not None:
-        # exclude: (B,H,K_top), 마지막 차원이 L의 인덱스
-        # α에 직접 scatter로 ε 부여
-        # scatter는 업데이트 값을 alpha와 같은 dtype/shape로 요구하므로, 동일 shape의 fill 텐서 준비
-        B, H, L = alpha.shape
-        if exclude.dim() != 3 or exclude.size(0) != B or exclude.size(1) != H:
-            raise ValueError(f"exclude shape must be (B,H,K), got {tuple(exclude.shape)} vs alpha {(B,H,L)}")
-        K = exclude.size(-1)
-        # 업데이트 값: (B,H,K) 텐서, 모두 eps
-        updates = torch.full((B, H, K), eps, dtype=alpha.dtype, device=alpha.device)
-        alpha = alpha.scatter(dim=-1, index=exclude, src=updates)
+        # exclude shape must be broadcastable to alpha[..., K]
+        # 지원 형태: (..., K)
+        if exclude.size(0) != alpha.size(0) or exclude.size(1) != alpha.size(1):
+            # 이미 맞게 보냈으니 아마 필요 없겠지만, 혹시 대비해서 에러 메시지 명확화
+            raise ValueError(f"exclude batch dims must match alpha: exclude{tuple(exclude.shape)} vs alpha{tuple(alpha.shape)}")
+        updates = torch.full_like(exclude, eps, dtype=alpha.dtype, device=alpha.device)
+        alpha = alpha.scatter(-1, exclude, updates)
 
-    # α0 재스케일 (안정화)
     alpha0 = alpha.sum(dim=-1, keepdim=True).clamp(1.0, 200.0)
     alpha = alpha / alpha.sum(dim=-1, keepdim=True).clamp_min(1e-12) * alpha0
-    alpha = alpha.clamp_min(eps)
-    return Dirichlet(alpha)
+    return Dirichlet(alpha.clamp_min(eps))
