@@ -1,4 +1,3 @@
-
 import torch.nn as nn
 import torch.nn.functional as F
 from dpnn_lib.distributions.gaussian import GaussianDistribution
@@ -13,10 +12,9 @@ class DistFeedForward(nn.Module):
     """
     def __init__(self, d_model, d_ff):
         super().__init__()
-        self.fc1_mu   = nn.Linear(d_model, d_ff)
-        self.fc1_var  = nn.Linear(d_model, d_ff)
-        self.fc2_mu   = nn.Linear(d_ff, d_model)
-        self.fc2_var  = nn.Linear(d_ff, d_model)
+        # Shared linear layers for both mu and var
+        self.fc1 = nn.Linear(d_model, d_ff)
+        self.fc2 = nn.Linear(d_ff, d_model)
 
     def forward(self, dist: GaussianDistribution):
         """
@@ -28,8 +26,12 @@ class DistFeedForward(nn.Module):
         Returns:
             GaussianDistribution: 처리된 Gaussian 분포.
         """
-        m1 = F.gelu(self.fc1_mu(dist.mu))
-        v1 = F.softplus(self.fc1_var(dist.var))
-        m2 = self.fc2_mu(m1)
-        v2 = F.softplus(self.fc2_var(v1))
+        # Apply shared linear layers to mu
+        m1 = F.gelu(self.fc1(dist.mu))
+        m2 = self.fc2(m1)
+
+        # Apply shared linear layers to var, ensuring non-negativity
+        v1 = F.gelu(self.fc1(dist.var))
+        v2 = F.softplus(self.fc2(v1))
+
         return GaussianDistribution(mu=m2, var=v2)

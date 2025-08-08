@@ -6,8 +6,6 @@ from typing import List
 from dpnn_lib.distributions.gaussian import GaussianDistribution
 from dpnn_lib.distributions.base import BaseDistribution
 from dpnn_lib.diffusion.base_diffusion import BaseDiffusionProcess
-from dpnn_lib.distributions.transformer_components.transformer_block import DistTransformerBlock
-
 class GaussianDiffusion(BaseDiffusionProcess):
     """
     Gaussian 분포에 대한 확산 프로세스를 구현합니다.
@@ -110,6 +108,7 @@ class DistDiffusionBlock(nn.Module):
     """
     def __init__(self, d_model, num_heads, d_ff):
         super().__init__()
+        from dpnn_lib.distributions.transformer_components.transformer_block import DistTransformerBlock # Local import to break circular dependency
         self.transformer_block = DistTransformerBlock(d_model, num_heads, d_ff)
 
     def forward(self, dist_t: GaussianDistribution, t: int):
