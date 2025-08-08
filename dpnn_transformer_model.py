@@ -2,14 +2,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Import from new dpnn package
 from dpnn.dists.gaussian import GaussianDiag
 from dpnn.layers.blocks import DistTransformerBlock
 from dpnn.core.config import preset_config, Preset, DistConfig
 
 # (임시) dpnn_lib positional encoding이 텐서를 받도록 수정됨
-from dpnn_lib.distributions.transformer_components.positional_encoding import \
-    PositionalDistributionEncoding
+from dpnn_lib.distributions.transformer_components.positional_encoding import     PositionalDistributionEncoding
+
+# 호환 shim (분포<->텐서 왕복) - PositionalDistributionEncoding이 텐서를 요구할 경우
+def posenc_shim(pos_enc, dist: GaussianDiag) -> GaussianDiag:
+    # pos_enc가 텐서를 입력으로 받고 텐서를 출력한다고 가정
+    y = pos_enc(dist.mean())  # 텐서 인풋 가정
+    # 출력 텐서를 다시 GaussianDiag 분포로 변환
+    return GaussianDiag.from_tensor(y, init_std=dist.scale.mean().item()) # 이전 분포의 평균 스케일 사용
 
 class DPNNTransformerModel(nn.Module):
     def __init__(self, ntoken, ninp, nhead, nhid, nlayers,

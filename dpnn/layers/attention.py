@@ -46,14 +46,7 @@ def bilinear_moment(Q: BaseDistribution, K: BaseDistribution, cfg: DistConfig):
     else:
         raise NotImplementedError("bilinear_moment only implemented for GaussianDiag for now.")
 
-def _softmax_fn(x: torch.Tensor, dim: int = -1) -> torch.Tensor:
-    return F.softmax(x, dim=dim)
-
-def softmax_via_samples(
-    logits_dist: BaseDistribution,
-    topk_idx: torch.Tensor | None,
-    cfg: DistConfig
-) -> BaseDistribution:
+def softmax_via_samples(logits_dist: BaseDistribution, topk_idx: torch.Tensor, cfg: DistConfig) -> BaseDistribution:
     """
     샘플링 기반 (MC/UKF)으로 소프트맥스 확률을 정확화합니다.
     """
@@ -73,7 +66,7 @@ def softmax_via_samples(
         outs = []
         for i in range(mu_flat.size(0)):
             g = GaussianDiag(mu_flat[i], 0.5*torch.log(var_flat[i]+1e-9)) # Reconstruct GaussianDiag
-            y = propagate_ukf(g, lambda z: _softmax_fn(z, dim=-1))
+            y = propagate_ukf(g, lambda z: F.softmax(z, dim=-1))
             outs.append(y.mean())  # cov도 원하면 y.cov()에서 diag 꺼내 tiny var로 사용
         p = torch.stack(outs, dim=0).reshape(B,H,Lq,Lk)
         return GaussianDiag(p, torch.log(torch.full_like(p, 1e-6)))
