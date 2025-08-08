@@ -12,6 +12,11 @@ project = 'DPNN'
 copyright = '2025, Your Name'
 author = 'Your Name'
 
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
