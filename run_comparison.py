@@ -52,6 +52,7 @@ def train_and_evaluate(model_name, model, optimizer, criterion, writer, log_file
     model.train()
     total_loss = 0
     start_time = time.time()
+    max_memory_allocated = 0
 
     for epoch in range(1, epochs + 1):
         data, target = get_dummy_data(vocab_size, batch_size, seq_len, device)
@@ -68,11 +69,21 @@ def train_and_evaluate(model_name, model, optimizer, criterion, writer, log_file
         optimizer.step()
         
         total_loss += loss.item()
-        
+
+        if device.type == 'cuda':
+            current_memory = torch.cuda.memory_allocated(device) / (1024**2) # MB
+            max_memory_allocated = max(max_memory_allocated, torch.cuda.max_memory_allocated(device) / (1024**2))
+            writer.add_scalar(f'Memory/Allocated_MB/{model_name}', current_memory, epoch)
+            writer.add_scalar(f'Memory/Max_Allocated_MB/{model_name}', max_memory_allocated, epoch)
+
         # Log to TensorBoard
         writer.add_scalar(f'Loss/{model_name}', loss.item(), epoch)
         
-        print(f"Epoch {epoch}/{epochs}, Loss: {loss.item():.4f}")
+        print(f"Epoch {epoch}/{epochs}, Loss: {loss.item():.4f}", end='')
+        if device.type == 'cuda':
+            print(f", Mem: {current_memory:.2f} MB")
+        else:
+            print()
         log_file.write(f"Epoch {epoch}/{epochs}, Loss: {loss.item():.4f}\n")
 
     avg_loss = total_loss / epochs
@@ -88,15 +99,21 @@ def train_and_evaluate(model_name, model, optimizer, criterion, writer, log_file
     print(f"Average Loss: {avg_loss:.4f}")
     print(f"Perplexity (PPL): {perplexity:.2f}")
     print(f"Total Training Time: {time_taken:.2f} seconds")
+    if device.type == 'cuda':
+        print(f"Max GPU Memory Allocated: {max_memory_allocated:.2f} MB")
 
     log_file.write(f"--- {model_name} Training Summary ---\n")
     log_file.write(f"Average Loss: {avg_loss:.4f}\n")
     log_file.write(f"Perplexity (PPL): {perplexity:.2f}\n")
     log_file.write(f"Total Training Time: {time_taken:.2f} seconds\n")
+    if device.type == 'cuda':
+        log_file.write(f"Max GPU Memory Allocated: {max_memory_allocated:.2f} MB\n")
 
     writer.add_scalar(f'Metrics/{model_name}_Average_Loss', avg_loss, 0)
     writer.add_scalar(f'Metrics/{model_name}_Perplexity', perplexity, 0)
     writer.add_scalar(f'Metrics/{model_name}_Training_Time', time_taken, 0)
+    if device.type == 'cuda':
+        writer.add_scalar(f'Metrics/{model_name}_Max_GPU_Memory_MB', max_memory_allocated, 0)
 
 # Main comparison script
 if __name__ == "__main__":
