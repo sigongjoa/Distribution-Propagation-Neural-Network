@@ -1,6 +1,6 @@
 # Distribution Propagation Neural Network (DPNN)
 
-This repository contains a Proof of Concept (PoC) implementation of a Distribution Propagation Neural Network (DPNN). The core idea behind DPNN is to represent and propagate information as probability distributions (e.g., Gaussian) rather than fixed point values, allowing the network to inherently model uncertainty.
+This repository contains a Proof of Concept (PoC) implementation of a Distribution Propagation Neural Network (DPNN). The core idea behind DPNN is to represent and propagate information as probability distributions (e.g., Gaussian) rather than fixed point values, allowing the network to inherently model uncertainty. This approach enables the network to not only process data but also to quantify and propagate the uncertainty associated with that data, leading to more robust and interpretable models.
 
 ## Key Features
 
@@ -56,6 +56,18 @@ To run an example, activate your virtual environment and execute the script as a
     ```bash
     python -m graph_transformer_poc_test
     ```
+
+## Related Work and Context
+
+DPNN builds upon the rich history of neural networks and probabilistic modeling. While traditional neural networks often output point estimates, DPNN explicitly models and propagates uncertainty through the network layers. This differentiates it from approaches that only quantify uncertainty at the output layer or rely on Monte Carlo sampling. Our work shares conceptual similarities with research in Bayesian Deep Learning and uncertainty quantification in AI, but focuses on a novel architectural paradigm where distributions are the fundamental units of information. For instance, unlike some DPGN (Deep Probabilistic Graph Networks) lines that focus on specific graph structures or few-shot learning, DPNN aims for a more general framework of distribution propagation across various neural network architectures.
+
+## Project Status and Meta
+
+This project is currently a Proof of Concept. We are actively working on:
+
+-   **PyPI Distribution:** Planning for official PyPI package distribution to simplify installation.
+-   **Version Tagging & Changelog:** Implementing proper versioning and maintaining a detailed changelog for releases.
+-   **Continuous Integration (CI):** Setting up comprehensive CI pipelines for automated documentation builds, unit tests, and integration tests to ensure code quality and reliability. You can view the status of our documentation build [here](https://sigongjoa.github.io/Distribution-Propagation-Neural-Network/).
 
 ## Project Structure (Proposed)
 

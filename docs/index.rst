@@ -7,6 +7,7 @@ Welcome to DPNN’s documentation!
 
    modules
    dpnn_lib
+   quickstart
    experiment_results.md
 
 Indices and tables
