@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 from dpnn_lib.distributions.gaussian import GaussianDistribution
@@ -17,22 +16,19 @@ class PositionalDistributionEncoding(nn.Module):
         self.pos_mu     = nn.Parameter(torch.zeros(max_len, d_model))
         self.pos_logvar = nn.Parameter(torch.zeros(max_len, d_model))
 
-    def forward(self, dist: GaussianDistribution):
+    def forward(self, x: torch.Tensor):
         """
-        입력 분포에 위치 인코딩을 추가합니다.
+        입력 텐서에 위치 인코딩을 추가합니다.
 
         Args:
-            dist (GaussianDistribution): 입력 Gaussian 분포.
+            x (torch.Tensor): 입력 텐서 (B, L, d).
 
         Returns:
-            GaussianDistribution: 위치 인코딩이 추가된 Gaussian 분포.
+            torch.Tensor: 위치 인코딩이 추가된 텐서.
         """
-        # dist.mu, dist.var = (B, L, d)
-        B, L, d = dist.mu.shape
+        # x = (B, L, d)
+        B, L, d = x.shape
         mu_pos  = self.pos_mu[:L].unsqueeze(0)      # (1, L, d)
         var_pos = torch.exp(self.pos_logvar[:L]).unsqueeze(0)
-        # 분포 병합 (μ_i += μ_pos, var_i += var_pos)
-        return GaussianDistribution(
-            mu  = dist.mu  + mu_pos,
-            var = dist.var + var_pos
-        )
+        # 텐서에 위치 인코딩의 평균을 더합니다.
+        return x + mu_pos
