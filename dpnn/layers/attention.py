@@ -16,27 +16,20 @@ def bilinear_moment(Q: BaseDistribution, K: BaseDistribution, cfg: DistConfig):
     # For now, a simple placeholder assuming Q and K are GaussianDiag
     if isinstance(Q, GaussianDiag) and isinstance(K, GaussianDiag):
         # Simplified: just multiply means for score, variance is more complex
-        score_mu = torch.matmul(Q.mean(), K.mean().transpose(-1, -2))
-        # Placeholder for variance of score
-        score_var = torch.ones_like(score_mu) * 0.1 # Arbitrary small variance
-        return GaussianDiag(score_mu, torch.log(torch.sqrt(score_var + 1e-6)))
+        S_mu = Q.loc @ K.loc.transpose(-1,-2)
+        S_var = (Q.var().unsqueeze(-2) @ (K.loc.transpose(-1,-2)**2)).squeeze(-2) # 아주 러프
+        return GaussianDiag(S_mu, 0.5*torch.log(S_var + 1e-6))
     else:
         raise NotImplementedError("bilinear_moment only implemented for GaussianDiag for now.")
 
-def softmax_via_samples(S: BaseDistribution, topk_idx: torch.Tensor, cfg: DistConfig) -> BaseDistribution:
+def softmax_via_samples(logits_dist: BaseDistribution, topk_idx: torch.Tensor, cfg: DistConfig) -> BaseDistribution:
     """
     샘플링 기반 (MC/UKF)으로 소프트맥스 확률을 정확화합니다.
     """
     # TODO: Implement sampling-based softmax approximation
     # For now, a simple placeholder
-    if cfg.mode == DistMode.UKF:
-        # Example: propagate_ukf(S, lambda x: F.softmax(x, dim=-1))
-        # This requires S to have a cov() method and fn to be applied to each sigma point
-        # For now, just return a placeholder
-        return GaussianDiag(F.softmax(S.mean(), dim=-1), torch.log(torch.ones_like(S.mean()) * 0.01))
-    else:
-        # Fallback to simple mean softmax
-        return GaussianDiag(F.softmax(S.mean(), dim=-1), torch.log(torch.ones_like(S.mean()) * 0.01))
+    p = F.softmax(logits_dist.mean(), dim=-1)
+    return GaussianDiag(p, torch.log(torch.full_like(p, 1e-6)))  # var≈0
 
 def combine_top_rest(attn_weights_top: BaseDistribution, attn_weights_rest: BaseDistribution) -> BaseDistribution:
     """
@@ -54,9 +47,9 @@ def linear_combination(V: BaseDistribution, attn: BaseDistribution, cfg: DistCon
     """
     # TODO: Implement proper linear combination for distributions
     # For now, a simple placeholder (e.g., mean-based multiplication)
-    output_mu = torch.matmul(attn.mean(), V.mean())
-    output_var = torch.matmul(attn.var(), V.var()) # Simplified
-    return GaussianDiag(output_mu, torch.log(torch.sqrt(output_var + 1e-6)))
+    Y_mu = attn.mean() @ V.loc
+    Y_var = (attn.mean()**2) @ V.var() # Simplified
+    return GaussianDiag(Y_mu, 0.5*torch.log(Y_var + 1e-6))
 
 
 class DistSelfAttention(nn.Module):

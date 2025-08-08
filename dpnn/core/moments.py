@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from .config import DistConfig, DistMode
 from .distribution import BaseDistribution
 from torch.distributions import Normal
+from ..dists.dirichlet_beta import Dirichlet # Import Dirichlet
 
 # dpnn/core/moments.py
 def relu_moment(mu: torch.Tensor, var: torch.Tensor):
@@ -47,12 +48,19 @@ def approx_curvature(dist, nonlin) -> torch.Tensor:
     # TODO: 실제 곡률 근사 로직 구현
     return torch.tensor(0.0) # Placeholder
 
-def approx_entropy(dist) -> torch.Tensor:
+def approx_entropy(dist: BaseDistribution) -> torch.Tensor:
     """
     분포의 정규화된 엔트로피를 근사합니다.
     """
-    # TODO: 실제 엔트로피 근사 로직 구현
-    return torch.tensor(0.0) # Placeholder
+    if hasattr(dist, 'var'):
+        v = dist.var()
+        # Assuming GaussianDiag for now, entropy = 0.5 * log(2 * pi * e * var)
+        # Normalizing by the dimension of the event space
+        # For a single scalar, it's 0.5 * log(2 * pi * e * var)
+        # For a vector, it's sum(0.5 * log(2 * pi * e * var_i))
+        # Here, we return the mean of the per-element entropy for simplicity
+        return 0.5 * torch.log(2 * torch.pi * torch.e * v + 1e-6).mean()
+    return torch.tensor(0.0, device=dist.mean().device if hasattr(dist, 'mean') else None)
 
 def decide_mode(dist, nonlin, cfg: DistConfig) -> DistMode:
     """
@@ -67,48 +75,26 @@ def decide_mode(dist, nonlin, cfg: DistConfig) -> DistMode:
     # 쉬운 구간
     return DistMode.MOMENT if H < 0.3 else DistMode.DELTA
 
-def softmax_logit_normal(S: BaseDistribution, exclude: torch.Tensor = None) -> BaseDistribution:
+def softmax_logit_normal(S: BaseDistribution, exclude: torch.Tensor = None) -> Dirichlet:
     """
     로짓-정규 근사를 사용하여 소프트맥스 확률을 계산합니다.
     S는 로짓 분포 (예: GaussianDiag)입니다.
     exclude는 MC/UKF로 이미 처리된 인덱스입니다.
     """
-    # S의 평균과 분산을 가져옵니다.
+    # S의 평균을 가져옵니다.
     mu_s = S.mean()
-    var_s = S.var()
 
-    # 로짓-정규 근사: log(softmax(x)) ~ N(mu_x - logsumexp(mu_x), var_x)
-    # 여기서는 직접 softmax(x)의 평균과 분산을 근사합니다.
-    # 이는 복잡한 수식이 필요하며, 간단한 근사를 사용합니다.
-    # 예를 들어, 각 로짓이 독립적인 가우시안이라고 가정하고,
-    # softmax(x_i)의 평균과 분산을 델타 메서드 등으로 근사할 수 있습니다.
-    # 또는, log-normal 분포의 속성을 활용할 수 있습니다.
+    # 간단한 근사: 평균에 소프트맥스를 적용하고, 이를 디리클레 분포의 concentration 파라미터로 사용합니다.
+    # 알파 = tau-scaled pseudo-counts
+    # 여기서 tau는 softmax의 온도가 아니라, 디리클레 분포의 concentration을 조절하는 스케일링 팩터입니다.
+    # 임시로 cfg.tau_init을 사용하지만, 실제로는 더 정교한 방법이 필요합니다.
+    # 예를 들어, S의 분산을 사용하여 concentration을 조절할 수 있습니다.
+    concentration = F.softmax(mu_s / S.var().mean().sqrt(), dim=-1) * 100.0 # 임시 스케일링
+    concentration = torch.clamp(concentration, min=1e-6) # Ensure concentration is positive
 
-    # 간단한 근사: 각 로짓의 평균에 소프트맥스를 적용하고, 분산은 0으로 가정합니다.
-    # 이는 매우 단순화된 접근이며, 실제로는 더 정교한 근사가 필요합니다.
-    # TODO: 더 정교한 logit-normal 근사 구현
-    
-    # 임시 구현: 평균에 소프트맥스 적용
-    attn_weights_mu = F.softmax(mu_s, dim=-1)
-    # 분산은 0으로 가정 (또는 작은 상수)
-    attn_weights_var = torch.zeros_like(var_s)
-
-    # exclude 인덱스에 해당하는 부분은 0으로 설정
+    # exclude 인덱스에 해당하는 부분은 0으로 설정 (Dirichlet에서는 concentration을 0으로)
     if exclude is not None:
-        # exclude는 (batch_size, num_heads, k_top) 형태일 수 있습니다.
-        # mu_s는 (batch_size, num_heads, seq_len) 형태일 수 있습니다.
-        # 따라서 exclude를 적절히 확장하여 마스킹해야 합니다.
-        # 현재는 간단하게 구현합니다.
         # TODO: exclude 인덱스 처리 로직 개선
-        mask = torch.ones_like(attn_weights_mu, dtype=torch.bool)
-        # 이 부분은 exclude의 차원에 따라 달라집니다.
-        # 예를 들어, exclude가 (B, H, K)이고 mu_s가 (B, H, L)이라면,
-        # mask[b, h, exclude[b, h, :]] = False 와 같이 처리해야 합니다.
-        # 현재는 간단한 마스킹을 위해 임시로 구현합니다.
-        # mask.scatter_(-1, exclude, False) # 이 방식은 exclude가 마지막 차원에 대한 인덱스일 때만 작동
-        pass # 실제 구현에서는 exclude를 사용하여 해당 위치의 값을 0으로 설정해야 합니다.
+        pass
 
-    # 임시로 GaussianDiag로 반환. 실제로는 BaseDistribution의 인스턴스를 반환해야 합니다.
-    # GaussianDiag는 loc과 log_scale을 받으므로, var를 log_scale로 변환해야 합니다.
-    from ..dists.gaussian import GaussianDiag # 순환 참조 방지를 위해 로컬 임포트
-    return GaussianDiag(attn_weights_mu, torch.log(torch.sqrt(attn_weights_var + 1e-6)))
+    return Dirichlet(concentration)

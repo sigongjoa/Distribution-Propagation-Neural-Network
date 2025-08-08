@@ -20,8 +20,9 @@ class GaussianDiag(BaseDistribution):
         텐서로부터 GaussianDiag 분포를 생성합니다. 초기 분산은 작게 설정됩니다.
         """
         loc = x
-        log_scale = torch.log(torch.full_like(x, init_std))
-        return cls(loc, log_scale)
+        # init_std를 직접 scale로 사용하고, log_scale은 이로부터 계산
+        scale = torch.full_like(x, init_std)
+        return cls(loc, torch.log(scale + 1e-6)) # Add epsilon for numerical stability
 
     def mean(self) -> torch.Tensor:
         return self.loc
@@ -72,27 +73,27 @@ class GaussianDiag(BaseDistribution):
         E[Y] = W E[X] + b
         Var[Y] = W^2 Var[X] (element-wise for diagonal covariance)
         """
-        new_loc = torch.matmul(self.loc, W.T) + b
-        # Assuming W is a linear layer weight matrix, so W.shape = (out_features, in_features)
-        # For diagonal covariance, we need element-wise square of W for variance propagation
-        # This assumes W is applied to each element independently, which is not strictly true for matrix multiplication.
-        # For a proper affine transformation with diagonal covariance, W should be a diagonal matrix or we need to handle full covariance.
-        # For now, let's assume W is a simple scaling or we are only interested in diagonal elements of the resulting covariance.
-        # A more rigorous approach for general W would involve: new_cov = W @ self.cov() @ W.T
-        # If W is (out_features, in_features) and self.var() is (batch_shape, in_features),
-        # then new_var should be (batch_shape, out_features).
-        # This is a simplification for diagonal Gaussian.
-        
-        # For a linear layer (matrix multiplication), the variance propagation is more complex.
-        # If Y = WX, then Cov(Y) = W Cov(X) W^T.
-        # If Cov(X) is diagonal (diag(var_x)), then Cov(Y)_ij = sum_k W_ik W_jk var_xk.
-        # The diagonal elements are Cov(Y)_ii = sum_k W_ik^2 var_xk.
-        # So, new_var_i = sum_k W_ik^2 * var_xk
-        
-        # Assuming W is (out_features, in_features)
+        new_loc = torch.matmul(self.loc, W.T) + (b if b is not None else 0)
+        # new_var = torch.matmul(self.var(), W.T**2) # Original, potentially problematic
+        # Corrected variance propagation for diagonal covariance and matrix multiplication
+        # If Y = WX, then Cov(Y)_ii = sum_k W_ik^2 * Var(X)_kk
+        # W is (out_features, in_features)
         # self.var() is (..., in_features)
         # new_var should be (..., out_features)
-        new_var = torch.matmul(self.var(), W.T**2) # Element-wise square of W.T
+        # Unsqueeze self.var() to (..., 1, in_features) for broadcasting with W.T**2 (in_features, out_features)
+        # Then sum over the in_features dimension
+        new_var = (self.var().unsqueeze(-2) @ (W.T**2)).squeeze(-2)
         
         new_log_scale = 0.5 * torch.log(new_var + 1e-6) # Add epsilon for stability
         return GaussianDiag(new_loc, new_log_scale)
+
+    def __add__(self, other: 'GaussianDiag') -> 'GaussianDiag':
+        """
+        두 GaussianDiag 분포를 더합니다 (독립 가정).
+        """
+        if not isinstance(other, GaussianDiag):
+            raise TypeError(f"Unsupported operand type(s) for +: 'GaussianDiag' and '{type(other).__name__}'")
+        
+        new_loc = self.loc + other.loc
+        new_var = self.var() + other.var()
+        return GaussianDiag(new_loc, torch.log(torch.sqrt(new_var + 1e-6)))
