@@ -1,0 +1,171 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.models.dirichlet_denoiser &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.models.dirichlet_denoiser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.models.dirichlet_denoiser의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="c1"># dpnn_lib/models/dirichlet_denoiser.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<div class="viewcode-block" id="DirichletDenoiser">
+<a class="viewcode-back" href="../../../dpnn_lib.models.html#dpnn_lib.models.dirichlet_denoiser.DirichletDenoiser">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DirichletDenoiser</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dirichlet Diffusion 모델에서 디노이징을 수행하는 신경망입니다.</span>
+<span class="sd">    alpha 벡터를 입력받아 디노이즈된 alpha 벡터를 예측합니다.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alpha_dim (int): alpha 벡터의 차원.</span>
+<span class="sd">        hidden_dim (int): 은닉층의 차원.</span>
+<span class="sd">        timesteps (int, optional): 총 타임스텝 수 (기본값: 101).</span>
+<span class="sd">        time_embed_dim (int, optional): 시간 임베딩 차원 (기본값: 1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">101</span><span class="p">,</span> <span class="n">time_embed_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="o">=</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="n">time_embed_dim</span><span class="p">)</span>
+        <span class="c1"># 입력 차원 = alpha_dim + time_embed_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">alpha_dim</span> <span class="o">+</span> <span class="n">time_embed_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">alpha_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Softplus</span><span class="p">()</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DirichletDenoiser.forward">
+<a class="viewcode-back" href="../../../dpnn_lib.models.html#dpnn_lib.models.dirichlet_denoiser.DirichletDenoiser.forward">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_vector</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        주어진 alpha 벡터와 timestep 정보를 사용하여 디노이즈된 alpha 벡터를 예측합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alpha_vector (torch.Tensor): 노이즈가 추가된 alpha 벡터 (배치 크기, alpha_dim, 1 또는 배치 크기, alpha_dim).</span>
+<span class="sd">            t (torch.Tensor): 현재 timestep 정보 (배치 크기).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 디노이즈된 alpha 벡터 (배치 크기, alpha_dim, 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># alpha_vector: (batch, alpha_dim, 1) 또는 (batch, alpha_dim)</span>
+        <span class="k">if</span> <span class="n">alpha_vector</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">alpha_vector</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># (batch, alpha_dim, 1) → (batch, alpha_dim)</span>
+            <span class="n">alpha_flat</span> <span class="o">=</span> <span class="n">alpha_vector</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alpha_flat</span> <span class="o">=</span> <span class="n">alpha_vector</span>  <span class="c1"># 이미 (batch, alpha_dim)</span>
+
+        <span class="c1"># t_embed: (batch, time_embed_dim)</span>
+        <span class="n">t_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_embedding</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">long</span><span class="p">())</span>
+
+        <span class="c1"># Ensure t_embed has the same batch size as alpha_flat</span>
+        <span class="k">if</span> <span class="n">t_embed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">alpha_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">t_embed</span> <span class="o">=</span> <span class="n">t_embed</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">alpha_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 두 텐서를 concat하기 전 모두 2D로 만듦 → (batch, alpha_dim + time_embed_dim)</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">alpha_flat</span><span class="p">,</span> <span class="n">t_embed</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 네트워크 통과 후 → (batch, alpha_dim)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+
+        <span class="c1"># 다시 (batch, alpha_dim, 1) 형태로 복원</span>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

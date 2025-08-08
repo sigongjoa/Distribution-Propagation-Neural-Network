@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.distributions.dirichlet &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.distributions.dirichlet</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.distributions.dirichlet의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span> <span class="c1"># Import torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">gammaln</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDistribution</span>
+
+<div class="viewcode-block" id="DirichletDistribution">
+<a class="viewcode-back" href="../../../dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DirichletDistribution</span><span class="p">(</span><span class="n">BaseDistribution</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dirichlet 분포를 나타내는 클래스.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alpha_vector (torch.Tensor): 분포의 alpha 벡터</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha_vector</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="n">alpha_vector</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span> <span class="o">=</span> <span class="n">alpha_vector</span>
+
+<div class="viewcode-block" id="DirichletDistribution.sample">
+<a class="viewcode-back" href="../../../dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.sample">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dirichlet 분포에서 샘플을 생성합니다.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 샘플링된 값</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure alpha_vector is on CPU for numpy operation</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">dirichlet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()),</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DirichletDistribution.log_prob">
+<a class="viewcode-back" href="../../../dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.log_prob">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        주어진 값에 대한 로그 확률을 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 관측값 (확률 벡터, 합이 1)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: log P(x)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Implement log probability calculation</span>
+        <span class="c1"># x is expected to be a probability vector (sums to 1)</span>
+        <span class="c1"># alpha_vector elements must be &gt; 0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)):</span> <span class="c1"># Use torch.isclose</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x must be a probability vector (sum to 1).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span> <span class="c1"># Use torch.any</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Alpha vector elements must be positive for log_prob.&quot;</span><span class="p">)</span>
+
+        <span class="n">alpha_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span><span class="p">)</span>
+        <span class="n">log_beta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">lgamma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span><span class="p">))</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">lgamma</span><span class="p">(</span><span class="n">alpha_sum</span><span class="p">)</span> <span class="c1"># Use torch.lgamma</span>
+
+        <span class="n">log_prob_val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">-</span> <span class="n">log_beta</span>
+        <span class="k">return</span> <span class="n">log_prob_val</span></div>
+
+
+<div class="viewcode-block" id="DirichletDistribution.combine">
+<a class="viewcode-back" href="../../../dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution.combine">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;DirichletDistribution&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        두 Dirichlet 분포를 결합합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (DirichletDistribution): 결합할 다른 Dirichlet 분포</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DirichletDistribution: 결합된 Dirichlet 분포</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Implement combination logic (e.g., parameter addition)</span>
+        <span class="c1"># This assumes alpha_vector elements can be directly added</span>
+        <span class="n">new_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_vector</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">alpha_vector</span> <span class="c1"># Direct tensor addition</span>
+        <span class="k">return</span> <span class="n">DirichletDistribution</span><span class="p">(</span><span class="n">alpha_vector</span><span class="o">=</span><span class="n">new_alpha</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

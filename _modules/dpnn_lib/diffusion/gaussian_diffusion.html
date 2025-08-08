@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.diffusion.gaussian_diffusion &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.diffusion.gaussian_diffusion</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.diffusion.gaussian_diffusion의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.gaussian</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianDistribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDistribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.diffusion.base_diffusion</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDiffusionProcess</span>
+<div class="viewcode-block" id="GaussianDiffusion">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaussianDiffusion</span><span class="p">(</span><span class="n">BaseDiffusionProcess</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gaussian 분포에 대한 확산 프로세스를 구현합니다.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        denoise_model (torch.nn.Module): 디노이징을 수행하는 모델 (예: DistDiffusionBlock).</span>
+<span class="sd">        timesteps (int): 총 타임스텝 수.</span>
+<span class="sd">        betas (torch.Tensor): 각 타임스텝에 대한 노이즈 스케줄 (베타 값).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">denoise_model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">betas</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">denoise_model</span> <span class="o">=</span> <span class="n">denoise_model</span> <span class="c1"># This will be DistDiffusionBlock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">=</span> <span class="n">betas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">betas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphas_cumprod</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_alphas_cumprod</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas_cumprod</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_one_minus_alphas_cumprod</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas_cumprod</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GaussianDiffusion.forward_step">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.forward_step">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_prev</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseDistribution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gaussian 분포에 한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dist_prev (BaseDistribution): 이전 타임스텝의 Gaussian 분포.</span>
+<span class="sd">            t (int): 현재 타임스텝.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseDistribution: 노이즈가 추가된 Gaussian 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dist_prev</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;GaussianDiffusion only supports GaussianDistribution for now.&quot;</span><span class="p">)</span>
+        
+        <span class="n">alpha_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">beta_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+        <span class="c1"># 1) 분포 스케일링: μ_t = sqrt(alpha)*μ_{t-1}</span>
+        <span class="n">mu_t</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">alpha_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">dist_prev</span><span class="o">.</span><span class="n">mu</span>
+        <span class="c1"># 2) 분산 업데이트: var_t = alpha*var_{t-1} + beta</span>
+        <span class="n">var_t</span> <span class="o">=</span> <span class="n">alpha_t</span> <span class="o">*</span> <span class="n">dist_prev</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="n">beta_t</span>
+        <span class="k">return</span> <span class="n">GaussianDistribution</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu_t</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GaussianDiffusion.denoise_block">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.denoise_block">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">denoise_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">noisy_dist</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseDistribution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        노이즈가 더해진 Gaussian 분포로부터 깨끗한 분포를 복원(denoise)합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            noisy_dist (BaseDistribution): 노이즈가 추가된 Gaussian 분포.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseDistribution: 디노이즈된 Gaussian 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">noisy_dist</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;GaussianDiffusion denoise_block only supports GaussianDistribution for now.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># The denoise_model (DistDiffusionBlock) takes a distribution and a timestep</span>
+        <span class="c1"># and returns a denoised distribution.</span>
+        <span class="c1"># Note: The timestep &#39;t&#39; is implicitly handled by the denoise_model if it needs it.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">denoise_model</span><span class="p">(</span><span class="n">noisy_dist</span><span class="p">,</span> <span class="n">noisy_dist</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="n">noisy_dist</span><span class="o">.</span><span class="n">params</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="c1"># Pass t if available</span></div>
+
+
+<div class="viewcode-block" id="GaussianDiffusion.loss">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.loss">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">noisy</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">denoised</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gaussian 분포에 대한 손실을 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            clean (BaseDistribution): 원본 깨끗한 Gaussian 분포.</span>
+<span class="sd">            noisy (BaseDistribution): 노이즈가 추가된 Gaussian 분포.</span>
+<span class="sd">            denoised (BaseDistribution): 디노이즈된 Gaussian 분포.</span>
+<span class="sd">            t (int): 현재 타임스텝.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 계산된 손실 (MSE).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clean</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">)</span> <span class="ow">or</span> \
+           <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">noisy</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">)</span> <span class="ow">or</span> \
+           <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denoised</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;GaussianDiffusion loss only supports GaussianDistribution for now.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Assuming the denoised distribution is a prediction of the clean distribution</span>
+        <span class="c1"># We can use KL divergence as a loss function</span>
+        <span class="c1"># KL(P || Q) = 0.5 * (log(var2/var1) + (var1 + (mu1-mu2)^2)/var2 - 1)</span>
+        
+        <span class="c1"># Simplified loss: MSE between predicted clean mu and true clean mu</span>
+        <span class="c1"># and MSE between predicted clean var and true clean var</span>
+        <span class="n">mu_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">denoised</span><span class="o">.</span><span class="n">mu</span> <span class="o">-</span> <span class="n">clean</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">var_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">denoised</span><span class="o">.</span><span class="n">var</span> <span class="o">-</span> <span class="n">clean</span><span class="o">.</span><span class="n">var</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># You might want to weight these losses differently or use KL divergence directly</span>
+        <span class="k">return</span> <span class="n">mu_loss</span> <span class="o">+</span> <span class="n">var_loss</span></div>
+</div>
+
+
+<span class="c1"># DistDiffusionBlock (from denoise.py) will be used as the denoise_model</span>
+<div class="viewcode-block" id="DistDiffusionBlock">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistDiffusionBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    확산 프로세스에서 디노이징을 수행하는 블록입니다.</span>
+<span class="sd">    트랜스포머 블록을 사용하여 분포를 처리합니다.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d_model (int): 모델 차원.</span>
+<span class="sd">        num_heads (int): 어텐션 헤드 수.</span>
+<span class="sd">        d_ff (int): 피드포워드 신경망의 내부 차원.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.transformer_components.transformer_block</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistTransformerBlock</span> <span class="c1"># Local import to break circular dependency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer_block</span> <span class="o">=</span> <span class="n">DistTransformerBlock</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DistDiffusionBlock.forward">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock.forward">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist_t</span><span class="p">:</span> <span class="n">GaussianDistribution</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        주어진 분포를 디노이징합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dist_t (GaussianDistribution): 노이즈가 추가된 Gaussian 분포.</span>
+<span class="sd">            t (int): 현재 타임스텝 (API 일관성을 위해 유지).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            GaussianDistribution: 디노이즈된 Gaussian 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The time step `t` is not used in this implementation, but is kept for API consistency.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_block</span><span class="p">(</span><span class="n">dist_t</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

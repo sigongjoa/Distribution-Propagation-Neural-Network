@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.distributions.transformer_components package &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8e72191d"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=afa94a99"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="genindex.html" />
+    <link rel="search" title="검색" href="search.html" />
+    <link rel="next" title="dpnn_lib.graph_ops package" href="dpnn_lib.graph_ops.html" />
+    <link rel="prev" title="dpnn_lib.distributions package" href="dpnn_lib.distributions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">dpnn_lib</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.diffusion.html">dpnn_lib.diffusion package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dpnn_lib.distributions.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnn_lib.distributions.transformer_components package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.base">dpnn_lib.distributions.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.dirichlet">dpnn_lib.distributions.dirichlet module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.gaussian">dpnn_lib.distributions.gaussian module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.poisson">dpnn_lib.distributions.poisson module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions.transformer">dpnn_lib.distributions.transformer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnn_lib.distributions.html#module-dpnn_lib.distributions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.graph_ops.html">dpnn_lib.graph_ops package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html">dpnn_lib.layers package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.lie_group.html">dpnn_lib.lie_group package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.security.html">dpnn_lib.security package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">dpnn_lib</a></li>
+          <li class="breadcrumb-item"><a href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.distributions.transformer_components package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dpnn_lib.distributions.transformer_components.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnn-lib-distributions-transformer-components-package">
+<h1>dpnn_lib.distributions.transformer_components package<a class="headerlink" href="#dpnn-lib-distributions-transformer-components-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.attention">
+<span id="dpnn-lib-distributions-transformer-components-attention-module"></span><h2>dpnn_lib.distributions.transformer_components.attention module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.attention" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.attention.DistAttention">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.attention.</span></span><span class="sig-name descname"><span class="pre">DistAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/attention.html#DistAttention"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.attention.DistAttention" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.attention.DistAttention.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/attention.html#DistAttention.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.attention.DistAttention.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.embedding">
+<span id="dpnn-lib-distributions-transformer-components-embedding-module"></span><h2>dpnn_lib.distributions.transformer_components.embedding module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.embedding" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.embedding.DistributionEmbedding">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.embedding.</span></span><span class="sig-name descname"><span class="pre">DistributionEmbedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/embedding.html#DistributionEmbedding"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.embedding.DistributionEmbedding" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>토큰 ID를 Gaussian 분포 임베딩으로 변환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_size</strong> (<em>int</em>) – 어휘 사전의 크기.</p></li>
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.embedding.DistributionEmbedding.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/embedding.html#DistributionEmbedding.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.embedding.DistributionEmbedding.forward" title="Link to this definition"></a></dt>
+<dd><p>토큰 ID를 Gaussian 분포 임베딩으로 변환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token_ids</strong> (<em>torch.Tensor</em>) – 입력 토큰 ID.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>변환된 Gaussian 분포 임베딩.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution">GaussianDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.feed_forward">
+<span id="dpnn-lib-distributions-transformer-components-feed-forward-module"></span><h2>dpnn_lib.distributions.transformer_components.feed_forward module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.feed_forward" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.feed_forward.DistFeedForward">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.feed_forward.</span></span><span class="sig-name descname"><span class="pre">DistFeedForward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/feed_forward.html#DistFeedForward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.feed_forward.DistFeedForward" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>분포를 처리하는 피드포워드 신경망입니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+<li><p><strong>d_ff</strong> (<em>int</em>) – 피드포워드 신경망의 내부 차원.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.feed_forward.DistFeedForward.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><span class="pre">GaussianDistribution</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/feed_forward.html#DistFeedForward.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.feed_forward.DistFeedForward.forward" title="Link to this definition"></a></dt>
+<dd><p>입력 분포에 대해 피드포워드 연산을 수행합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><em>GaussianDistribution</em></a>) – 입력 Gaussian 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>처리된 Gaussian 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution">GaussianDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.lm_head">
+<span id="dpnn-lib-distributions-transformer-components-lm-head-module"></span><h2>dpnn_lib.distributions.transformer_components.lm_head module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.lm_head" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.lm_head.DistributionLMHead">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.lm_head.</span></span><span class="sig-name descname"><span class="pre">DistributionLMHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/lm_head.html#DistributionLMHead"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.lm_head.DistributionLMHead" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>분포를 로짓으로 변환하는 언어 모델 헤드입니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+<li><p><strong>vocab_size</strong> (<em>int</em>) – 어휘 사전의 크기.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.lm_head.DistributionLMHead.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><span class="pre">GaussianDistribution</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/lm_head.html#DistributionLMHead.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.lm_head.DistributionLMHead.forward" title="Link to this definition"></a></dt>
+<dd><p>입력 분포의 평균을 로짓으로 변환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><em>GaussianDistribution</em></a>) – 입력 Gaussian 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>변환된 로짓.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.positional_encoding">
+<span id="dpnn-lib-distributions-transformer-components-positional-encoding-module"></span><h2>dpnn_lib.distributions.transformer_components.positional_encoding module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.positional_encoding" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.positional_encoding.PositionalDistributionEncoding">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.positional_encoding.</span></span><span class="sig-name descname"><span class="pre">PositionalDistributionEncoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/positional_encoding.html#PositionalDistributionEncoding"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.positional_encoding.PositionalDistributionEncoding" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>분포에 대한 위치 인코딩을 생성합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_len</strong> (<em>int</em>) – 최대 시퀀스 길이.</p></li>
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.positional_encoding.PositionalDistributionEncoding.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/positional_encoding.html#PositionalDistributionEncoding.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.positional_encoding.PositionalDistributionEncoding.forward" title="Link to this definition"></a></dt>
+<dd><p>입력 텐서에 위치 인코딩을 추가합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – 입력 텐서 (B, L, d).</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>위치 인코딩이 추가된 텐서.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components.transformer_block">
+<span id="dpnn-lib-distributions-transformer-components-transformer-block-module"></span><h2>dpnn_lib.distributions.transformer_components.transformer_block module<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components.transformer_block" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.transformer_block.DistTransformerBlock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.distributions.transformer_components.transformer_block.</span></span><span class="sig-name descname"><span class="pre">DistTransformerBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/transformer_block.html#DistTransformerBlock"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.transformer_block.DistTransformerBlock" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>분포를 처리하는 트랜스포머 블록입니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em>) – 어텐션 헤드 수.</p></li>
+<li><p><strong>d_ff</strong> (<em>int</em>) – 피드포워드 신경망의 내부 차원.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.distributions.transformer_components.transformer_block.DistTransformerBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><span class="pre">GaussianDistribution</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/distributions/transformer_components/transformer_block.html#DistTransformerBlock.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.distributions.transformer_components.transformer_block.DistTransformerBlock.forward" title="Link to this definition"></a></dt>
+<dd><p>입력 분포에 대해 셀프 어텐션과 피드포워드 네트워크를 적용합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dist_in</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><em>GaussianDistribution</em></a>) – 입력 Gaussian 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>처리된 Gaussian 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution">GaussianDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.distributions.transformer_components">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpnn_lib.distributions.transformer_components" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpnn_lib.distributions.html" class="btn btn-neutral float-left" title="dpnn_lib.distributions package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnn_lib.graph_ops.html" class="btn btn-neutral float-right" title="dpnn_lib.graph_ops package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

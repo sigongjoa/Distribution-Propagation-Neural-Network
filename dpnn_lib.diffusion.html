@@ -1,0 +1,533 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.diffusion package &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8e72191d"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=afa94a99"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="genindex.html" />
+    <link rel="search" title="검색" href="search.html" />
+    <link rel="next" title="dpnn_lib.distributions package" href="dpnn_lib.distributions.html" />
+    <link rel="prev" title="dpnn_lib.cells package" href="dpnn_lib.cells.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">dpnn_lib</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.cells.html">dpnn_lib.cells package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpnn_lib.diffusion package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.diffusion.base_diffusion">dpnn_lib.diffusion.base_diffusion module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess"><code class="docutils literal notranslate"><span class="pre">BaseDiffusionProcess</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.diffusion.dirichlet_diffusion">dpnn_lib.diffusion.dirichlet_diffusion module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion"><code class="docutils literal notranslate"><span class="pre">DirichletDiffusion</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.diffusion.gaussian_diffusion">dpnn_lib.diffusion.gaussian_diffusion module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock"><code class="docutils literal notranslate"><span class="pre">DistDiffusionBlock</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion"><code class="docutils literal notranslate"><span class="pre">GaussianDiffusion</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.diffusion.poisson_diffusion">dpnn_lib.diffusion.poisson_diffusion module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion"><code class="docutils literal notranslate"><span class="pre">PoissonDiffusion</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dpnn_lib.diffusion">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.distributions.html">dpnn_lib.distributions package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.graph_ops.html">dpnn_lib.graph_ops package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.layers.html">dpnn_lib.layers package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.lie_group.html">dpnn_lib.lie_group package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.models.html">dpnn_lib.models package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.security.html">dpnn_lib.security package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpnn_lib.utils.html">dpnn_lib.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">dpnn_lib</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.diffusion package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dpnn_lib.diffusion.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnn-lib-diffusion-package">
+<h1>dpnn_lib.diffusion package<a class="headerlink" href="#dpnn-lib-diffusion-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-dpnn_lib.diffusion.base_diffusion">
+<span id="dpnn-lib-diffusion-base-diffusion-module"></span><h2>dpnn_lib.diffusion.base_diffusion module<a class="headerlink" href="#module-dpnn_lib.diffusion.base_diffusion" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.diffusion.base_diffusion.</span></span><span class="sig-name descname"><span class="pre">BaseDiffusionProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>모든 확산 프로세스의 추상 베이스 클래스.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timesteps</strong> (<em>int</em>) – 총 타임스텝 수.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.denoise_block">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">denoise_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noisy_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess.denoise_block"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.denoise_block" title="Link to this definition"></a></dt>
+<dd><p>노이즈가 더해진 분포로부터 깨끗한 분포를 복원(denoise)합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>noisy_dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 노이즈가 추가된 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>디노이즈된 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.forward_step">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess.forward_step"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.forward_step" title="Link to this definition"></a></dt>
+<dd><p>한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 이전 타임스텝의 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>노이즈가 추가된 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.loss">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">denoised</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess.loss"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.loss" title="Link to this definition"></a></dt>
+<dd><p>한 스텝에 대한 손실을 계산합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clean</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 원본 깨끗한 분포.</p></li>
+<li><p><strong>noisy</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 노이즈가 추가된 분포.</p></li>
+<li><p><strong>denoised</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 디노이즈된 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>계산된 손실.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_forward">
+<span class="sig-name descname"><span class="pre">run_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess.run_forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_forward" title="Link to this definition"></a></dt>
+<dd><p>0부터 T 타임까지 forward diffusion 전체 궤적을 생성합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x0</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 초기 깨끗한 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>각 타임스텝에서의 분포 리스트.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_reverse">
+<span class="sig-name descname"><span class="pre">run_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/base_diffusion.html#BaseDiffusionProcess.run_reverse"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess.run_reverse" title="Link to this definition"></a></dt>
+<dd><p>T부터 0까지 reverse denoising (샘플링)을 수행합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xt</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 노이즈가 추가된 최종 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>재구성된 깨끗한 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.diffusion.dirichlet_diffusion">
+<span id="dpnn-lib-diffusion-dirichlet-diffusion-module"></span><h2>dpnn_lib.diffusion.dirichlet_diffusion module<a class="headerlink" href="#module-dpnn_lib.diffusion.dirichlet_diffusion" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.diffusion.dirichlet_diffusion.</span></span><span class="sig-name descname"><span class="pre">DirichletDiffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior_alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/dirichlet_diffusion.html#DirichletDiffusion"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <a class="reference internal" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess" title="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiffusionProcess</span></code></a></p>
+<p>Dirichlet 분포에 대한 확산 프로세스를 구현합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – 디노이징을 수행하는 모델 (예: DirichletDenoiser).</p></li>
+<li><p><strong>betas</strong> (<em>torch.Tensor</em>) – 각 타임스텝에 대한 노이즈 스케줄 (베타 값).</p></li>
+<li><p><strong>prior_alpha</strong> (<em>torch.Tensor</em>) – t=0의 Dirichlet alpha prior.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – 총 타임스텝 수.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.denoise_block">
+<span class="sig-name descname"><span class="pre">denoise_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noisy_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/dirichlet_diffusion.html#DirichletDiffusion.denoise_block"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.denoise_block" title="Link to this definition"></a></dt>
+<dd><p>노이즈가 더해진 Dirichlet 분포로부터 깨끗한 분포를 복원(denoise)합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>noisy_dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><em>DirichletDistribution</em></a>) – 노이즈가 추가된 Dirichlet 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>디노이즈된 Dirichlet 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution">DirichletDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.forward_step">
+<span class="sig-name descname"><span class="pre">forward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/dirichlet_diffusion.html#DirichletDiffusion.forward_step"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.forward_step" title="Link to this definition"></a></dt>
+<dd><p>Dirichlet 분포에 한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><em>DirichletDistribution</em></a>) – 이전 타임스텝의 Dirichlet 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>노이즈가 추가된 Dirichlet 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution">DirichletDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">xt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0_hat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><span class="pre">DirichletDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/dirichlet_diffusion.html#DirichletDiffusion.loss"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.loss" title="Link to this definition"></a></dt>
+<dd><p>Dirichlet 분포에 대한 손실을 계산합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><em>DirichletDistribution</em></a>) – 원본 깨끗한 Dirichlet 분포.</p></li>
+<li><p><strong>xt</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><em>DirichletDistribution</em></a>) – 노이즈가 추가된 Dirichlet 분포.</p></li>
+<li><p><strong>x0_hat</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.dirichlet.DirichletDistribution" title="dpnn_lib.distributions.dirichlet.DirichletDistribution"><em>DirichletDistribution</em></a>) – 디노이즈된 Dirichlet 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>계산된 손실 (MSE).</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.diffusion.gaussian_diffusion">
+<span id="dpnn-lib-diffusion-gaussian-diffusion-module"></span><h2>dpnn_lib.diffusion.gaussian_diffusion module<a class="headerlink" href="#module-dpnn_lib.diffusion.gaussian_diffusion" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.diffusion.gaussian_diffusion.</span></span><span class="sig-name descname"><span class="pre">DistDiffusionBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#DistDiffusionBlock"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>확산 프로세스에서 디노이징을 수행하는 블록입니다.
+트랜스포머 블록을 사용하여 분포를 처리합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_model</strong> (<em>int</em>) – 모델 차원.</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em>) – 어텐션 헤드 수.</p></li>
+<li><p><strong>d_ff</strong> (<em>int</em>) – 피드포워드 신경망의 내부 차원.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><span class="pre">GaussianDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#DistDiffusionBlock.forward"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.DistDiffusionBlock.forward" title="Link to this definition"></a></dt>
+<dd><p>주어진 분포를 디노이징합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist_t</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution"><em>GaussianDistribution</em></a>) – 노이즈가 추가된 Gaussian 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝 (API 일관성을 위해 유지).</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>디노이즈된 Gaussian 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.gaussian.GaussianDistribution" title="dpnn_lib.distributions.gaussian.GaussianDistribution">GaussianDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.diffusion.gaussian_diffusion.</span></span><span class="sig-name descname"><span class="pre">GaussianDiffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">denoise_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.nn.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#GaussianDiffusion"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <a class="reference internal" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess" title="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiffusionProcess</span></code></a></p>
+<p>Gaussian 분포에 대한 확산 프로세스를 구현합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>denoise_model</strong> (<em>torch.nn.Module</em>) – 디노이징을 수행하는 모델 (예: DistDiffusionBlock).</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – 총 타임스텝 수.</p></li>
+<li><p><strong>betas</strong> (<em>torch.Tensor</em>) – 각 타임스텝에 대한 노이즈 스케줄 (베타 값).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.denoise_block">
+<span class="sig-name descname"><span class="pre">denoise_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noisy_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#GaussianDiffusion.denoise_block"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.denoise_block" title="Link to this definition"></a></dt>
+<dd><p>노이즈가 더해진 Gaussian 분포로부터 깨끗한 분포를 복원(denoise)합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>noisy_dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 노이즈가 추가된 Gaussian 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>디노이즈된 Gaussian 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.forward_step">
+<span class="sig-name descname"><span class="pre">forward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#GaussianDiffusion.forward_step"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.forward_step" title="Link to this definition"></a></dt>
+<dd><p>Gaussian 분포에 한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist_prev</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 이전 타임스텝의 Gaussian 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>노이즈가 추가된 Gaussian 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution">BaseDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">denoised</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><span class="pre">BaseDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/gaussian_diffusion.html#GaussianDiffusion.loss"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.gaussian_diffusion.GaussianDiffusion.loss" title="Link to this definition"></a></dt>
+<dd><p>Gaussian 분포에 대한 손실을 계산합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clean</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 원본 깨끗한 Gaussian 분포.</p></li>
+<li><p><strong>noisy</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 노이즈가 추가된 Gaussian 분포.</p></li>
+<li><p><strong>denoised</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.base.BaseDistribution" title="dpnn_lib.distributions.base.BaseDistribution"><em>BaseDistribution</em></a>) – 디노이즈된 Gaussian 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>계산된 손실 (MSE).</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.diffusion.poisson_diffusion">
+<span id="dpnn-lib-diffusion-poisson-diffusion-module"></span><h2>dpnn_lib.diffusion.poisson_diffusion module<a class="headerlink" href="#module-dpnn_lib.diffusion.poisson_diffusion" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnn_lib.diffusion.poisson_diffusion.</span></span><span class="sig-name descname"><span class="pre">PoissonDiffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnn_lib/diffusion/poisson_diffusion.html#PoissonDiffusion"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion" title="Link to this definition"></a></dt>
+<dd><p>기반 클래스: <a class="reference internal" href="#dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess" title="dpnn_lib.diffusion.base_diffusion.BaseDiffusionProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiffusionProcess</span></code></a></p>
+<p>Poisson 분포에 대한 확산 프로세스를 구현합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – 디노이징을 수행하는 모델 (예: PoissonDenoiser).</p></li>
+<li><p><strong>betas</strong> (<em>torch.Tensor</em>) – 각 타임스텝에 대한 노이즈 스케줄 (베타 값).</p></li>
+<li><p><strong>prior_rate</strong> (<em>torch.Tensor</em>) – t=0의 Poisson rate prior.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – 총 타임스텝 수.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.denoise_block">
+<span class="sig-name descname"><span class="pre">denoise_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noisy_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/poisson_diffusion.html#PoissonDiffusion.denoise_block"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.denoise_block" title="Link to this definition"></a></dt>
+<dd><p>노이즈가 더해진 Poisson 분포로부터 깨끗한 분포를 복원(denoise)합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>noisy_dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><em>PoissonDistribution</em></a>) – 노이즈가 추가된 Poisson 분포.</p>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>디노이즈된 Poisson 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution">PoissonDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.forward_step">
+<span class="sig-name descname"><span class="pre">forward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/poisson_diffusion.html#PoissonDiffusion.forward_step"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.forward_step" title="Link to this definition"></a></dt>
+<dd><p>Poisson 분포에 한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><em>PoissonDistribution</em></a>) – 이전 타임스텝의 Poisson 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>노이즈가 추가된 Poisson 분포.</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution">PoissonDistribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">xt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0_hat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><span class="pre">PoissonDistribution</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="_modules/dpnn_lib/diffusion/poisson_diffusion.html#PoissonDiffusion.loss"><span class="viewcode-link"><span class="pre">[소스]</span></span></a><a class="headerlink" href="#dpnn_lib.diffusion.poisson_diffusion.PoissonDiffusion.loss" title="Link to this definition"></a></dt>
+<dd><p>Poisson 분포에 대한 손실을 계산합니다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">매개변수<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><em>PoissonDistribution</em></a>) – 원본 깨끗한 Poisson 분포.</p></li>
+<li><p><strong>xt</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><em>PoissonDistribution</em></a>) – 노이즈가 추가된 Poisson 분포.</p></li>
+<li><p><strong>x0_hat</strong> (<a class="reference internal" href="dpnn_lib.distributions.html#dpnn_lib.distributions.poisson.PoissonDistribution" title="dpnn_lib.distributions.poisson.PoissonDistribution"><em>PoissonDistribution</em></a>) – 디노이즈된 Poisson 분포.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – 현재 타임스텝.</p></li>
+</ul>
+</dd>
+<dt class="field-even">반환<span class="colon">:</span></dt>
+<dd class="field-even"><p>계산된 손실 (Negative log-likelihood).</p>
+</dd>
+<dt class="field-odd">반환 형식<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dpnn_lib.diffusion">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpnn_lib.diffusion" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpnn_lib.cells.html" class="btn btn-neutral float-left" title="dpnn_lib.cells package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnn_lib.distributions.html" class="btn btn-neutral float-right" title="dpnn_lib.distributions package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

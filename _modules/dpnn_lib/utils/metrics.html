@@ -1,0 +1,200 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.utils.metrics &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.utils.metrics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.utils.metrics의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDistribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.gaussian</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianDistribution</span>
+
+<div class="viewcode-block" id="Metrics">
+<a class="viewcode-back" href="../../../dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Metrics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    모델 성능 평가를 위한 다양한 메트릭을 제공하는 클래스입니다.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Metrics.kl_divergence">
+<a class="viewcode-back" href="../../../dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.kl_divergence">[문서]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kl_divergence</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        두 분포 간의 KL 발산을 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p (BaseDistribution): 첫 번째 분포.</span>
+<span class="sd">            q (BaseDistribution): 두 번째 분포.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 계산된 KL 발산 값.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Implement KL divergence calculation</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.gaussian</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianDistribution</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">GaussianDistribution</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;KL divergence for now only supported for GaussianDistribution.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># KL divergence between two Gaussian distributions N(mu_p, var_p) and N(mu_q, var_q)</span>
+        <span class="c1"># KL(P || Q) = 0.5 * (log(var_q / var_p) + (var_p + (mu_p - mu_q)^2) / var_q - 1)</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">var</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">q</span><span class="o">.</span><span class="n">var</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Variances must be positive for KL divergence calculation.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert to torch tensors for autograd</span>
+        <span class="n">mu_p</span><span class="p">,</span> <span class="n">var_p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">var</span>
+        <span class="n">mu_q</span><span class="p">,</span> <span class="n">var_q</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">var</span>
+
+        <span class="n">kl_div</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">var_q</span> <span class="o">/</span> <span class="n">var_p</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">var_p</span> <span class="o">+</span> <span class="p">(</span><span class="n">mu_p</span> <span class="o">-</span> <span class="n">mu_q</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">var_q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">kl_div</span></div>
+
+
+<div class="viewcode-block" id="Metrics.perplexity">
+<a class="viewcode-back" href="../../../dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.perplexity">[문서]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perplexity</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        주어진 로짓과 레이블에 대한 Perplexity를 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            logits (torch.Tensor): 모델의 출력 로짓.</span>
+<span class="sd">            labels (torch.Tensor): 실제 레이블.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 계산된 Perplexity 값.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">logits</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">labels</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Metrics.accuracy">
+<a class="viewcode-back" href="../../../dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.accuracy">[문서]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        주어진 로짓과 레이블에 대한 정확도를 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            logits (torch.Tensor): 모델의 출력 로짓.</span>
+<span class="sd">            labels (torch.Tensor): 실제 레이블.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 계산된 정확도 값.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">predictions</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Metrics.visualize_distribution">
+<a class="viewcode-back" href="../../../dpnn_lib.utils.html#dpnn_lib.utils.metrics.Metrics.visualize_distribution">[문서]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visualize_distribution</span><span class="p">(</span><span class="n">distribution</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        분포를 시각화합니다 (구현되지 않음).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distribution (BaseDistribution): 시각화할 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Implement distribution visualization (e.g., using matplotlib)</span>
+        <span class="k">pass</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

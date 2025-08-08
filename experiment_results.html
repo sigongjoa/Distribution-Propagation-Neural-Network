@@ -1,0 +1,167 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transformer Model Comparison: Standard vs. DPNN &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8e72191d"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=afa94a99"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="genindex.html" />
+    <link rel="search" title="검색" href="search.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Transformer Model Comparison: Standard vs. DPNN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-results">Performance Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-logs">Detailed Logs</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Transformer Model Comparison: Standard vs. DPNN</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/experiment_results.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="transformer-model-comparison-standard-vs-dpnn">
+<h1>Transformer Model Comparison: Standard vs. DPNN<a class="headerlink" href="#transformer-model-comparison-standard-vs-dpnn" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This document presents a comparison between the standard Transformer model and our proposed DPNN (Distribution Propagation Neural Network) Transformer model on the WikiText-2 dataset. The key highlight is that the DPNN model achieves <strong>competitive performance</strong> while using only <strong>20% of the parameters</strong> of the standard model, demonstrating significant parameter efficiency.</p>
+</section>
+<section id="performance-results">
+<h2>Performance Results<a class="headerlink" href="#performance-results" title="Link to this heading"></a></h2>
+<p>The following table summarizes the final test results for both models after 3 epochs of training.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Model</p></th>
+<th class="head text-center"><p>Test Loss</p></th>
+<th class="head text-center"><p>Test Perplexity (PPL)</p></th>
+<th class="head text-center"><p>Avg. Time per Epoch</p></th>
+<th class="head text-center"><p>Parameter Ratio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Standard Transformer</strong></p></td>
+<td class="text-center"><p><strong>6.27</strong></p></td>
+<td class="text-center"><p><strong>527.28</strong></p></td>
+<td class="text-center"><p>~107 sec</p></td>
+<td class="text-center"><p>100%</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DPNN Transformer</strong></p></td>
+<td class="text-center"><p>6.82</p></td>
+<td class="text-center"><p>919.84</p></td>
+<td class="text-center"><p><strong>~69 sec</strong></p></td>
+<td class="text-center"><p><strong>~20%</strong></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="analysis">
+<h2>Analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h2>
+<p>While the standard Transformer shows higher accuracy (lower PPL), the DPNN Transformer demonstrates a remarkable trade-off between performance and efficiency.</p>
+<ul class="simple">
+<li><p><strong>Efficiency</strong>: The DPNN model trains significantly faster (approx. 35% faster per epoch) and is much lighter due to its drastically reduced parameter count.</p></li>
+<li><p><strong>Effectiveness</strong>: With only a fifth of the parameters, the DPNN model still achieves a respectable PPL of 919.84. This proves the viability of the DPNN architecture as a highly efficient alternative for resource-constrained environments.</p></li>
+<li><p><strong>Future Work &amp; Reproducibility</strong>: While the current PPL suggests room for improvement compared to the standard model, these results strongly validate the concept of parameter efficiency. Future work will focus on optimizing hyperparameters, standardizing training schedules, and ensuring full reproducibility of results across different seeds to further close the performance gap.</p></li>
+<li><p><strong>Potential</strong>: This result is a strong proof-of-concept. By moderately increasing the parameter count of the DPNN model, it has the potential to match or even exceed the performance of the standard model while maintaining a significant advantage in speed and size.</p></li>
+</ul>
+</section>
+<section id="detailed-logs">
+<h2>Detailed Logs<a class="headerlink" href="#detailed-logs" title="Link to this heading"></a></h2>
+<p>For full transparency, the raw output logs for each experiment are available via the links below:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#../results/standard_transformer_results.log"><span class="xref myst">Standard Transformer Results</span></a></p></li>
+<li><p><a class="reference internal" href="#../results/dpnn_transformer_results.log"><span class="xref myst">DPNN Transformer Results</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

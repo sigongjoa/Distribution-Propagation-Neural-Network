@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ko" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnn_lib.diffusion.dirichlet_diffusion &mdash; DPNN  문서</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8e72191d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=afa94a99"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="색인" href="../../../genindex.html" />
+    <link rel="search" title="검색" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            DPNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpnn_lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnn_lib.html">dpnn_lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experiment_results.html">Transformer Model Comparison: Standard vs. DPNN</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">DPNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">모듈 코드</a></li>
+      <li class="breadcrumb-item active">dpnn_lib.diffusion.dirichlet_diffusion</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>dpnn_lib.diffusion.dirichlet_diffusion의 소스 코드</h1><div class="highlight"><pre>
+<span></span><span class="c1"># dpnn_lib/diffusion/dirichlet_diffusion.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.distributions.dirichlet</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirichletDistribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnn_lib.diffusion.base_diffusion</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDiffusionProcess</span>
+
+<div class="viewcode-block" id="DirichletDiffusion">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion">[문서]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DirichletDiffusion</span><span class="p">(</span><span class="n">BaseDiffusionProcess</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dirichlet 분포에 대한 확산 프로세스를 구현합니다.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (torch.nn.Module): 디노이징을 수행하는 모델 (예: DirichletDenoiser).</span>
+<span class="sd">        betas (torch.Tensor): 각 타임스텝에 대한 노이즈 스케줄 (베타 값).</span>
+<span class="sd">        prior_alpha (torch.Tensor): t=0의 Dirichlet alpha prior.</span>
+<span class="sd">        timesteps (int): 총 타임스텝 수.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">prior_alpha</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>                  <span class="c1"># denoise 네트워크</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">betas</span> <span class="o">=</span> <span class="n">betas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prior_alpha</span> <span class="o">=</span> <span class="n">prior_alpha</span>      <span class="c1"># t=0의 Dirichlet alpha prior</span>
+
+<div class="viewcode-block" id="DirichletDiffusion.forward_step">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.forward_step">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">DirichletDistribution</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DirichletDistribution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dirichlet 분포에 한 타임스텝만큼 노이즈를 더한 후 변화된 분포를 반환합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dist (DirichletDistribution): 이전 타임스텝의 Dirichlet 분포.</span>
+<span class="sd">            t (int): 현재 타임스텝.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DirichletDistribution: 노이즈가 추가된 Dirichlet 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alpha_prev</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">alpha_vector</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="c1"># 예시: 지수 감쇠 + 고정 prior</span>
+        <span class="n">alpha_t</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha_prev</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior_alpha</span>
+        <span class="k">return</span> <span class="n">DirichletDistribution</span><span class="p">(</span><span class="n">alpha_t</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DirichletDiffusion.denoise_block">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.denoise_block">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">denoise_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">noisy_dist</span><span class="p">:</span> <span class="n">DirichletDistribution</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DirichletDistribution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        노이즈가 더해진 Dirichlet 분포로부터 깨끗한 분포를 복원(denoise)합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            noisy_dist (DirichletDistribution): 노이즈가 추가된 Dirichlet 분포.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DirichletDistribution: 디노이즈된 Dirichlet 분포.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 모델은 현재 alpha와 timestep t를 입력받아 다음 단계 alpha를 예측</span>
+        <span class="c1"># alpha_vector는 텐서이므로, 모델 입력에 맞게 조정</span>
+        <span class="c1"># t는 모델에 전달할 때는 텐서로 변환</span>
+        <span class="n">alpha_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">noisy_dist</span><span class="o">.</span><span class="n">alpha_vector</span><span class="p">,</span> <span class="n">noisy_dist</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="n">noisy_dist</span><span class="o">.</span><span class="n">params</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="c1"># Pass t if available</span>
+        <span class="k">return</span> <span class="n">DirichletDistribution</span><span class="p">(</span><span class="n">alpha_hat</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DirichletDiffusion.loss">
+<a class="viewcode-back" href="../../../dpnn_lib.diffusion.html#dpnn_lib.diffusion.dirichlet_diffusion.DirichletDiffusion.loss">[문서]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="n">DirichletDistribution</span><span class="p">,</span> <span class="n">xt</span><span class="p">:</span> <span class="n">DirichletDistribution</span><span class="p">,</span> <span class="n">x0_hat</span><span class="p">:</span> <span class="n">DirichletDistribution</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dirichlet 분포에 대한 손실을 계산합니다.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x0 (DirichletDistribution): 원본 깨끗한 Dirichlet 분포.</span>
+<span class="sd">            xt (DirichletDistribution): 노이즈가 추가된 Dirichlet 분포.</span>
+<span class="sd">            x0_hat (DirichletDistribution): 디노이즈된 Dirichlet 분포.</span>
+<span class="sd">            t (int): 현재 타임스텝.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 계산된 손실 (MSE).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># KL divergence between true posterior and model prediction</span>
+        <span class="c1"># For Dirichlet, KL(P || Q) = sum( (alpha_P - alpha_Q) * digamma(alpha_P) ) + log(Beta(alpha_Q)) - log(Beta(alpha_P))</span>
+        <span class="c1"># Simplified loss: MSE between predicted clean alpha and true clean alpha</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">x0_hat</span><span class="o">.</span><span class="n">alpha_vector</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">x0</span><span class="o">.</span><span class="n">alpha_vector</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Your Name.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
