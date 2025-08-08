@@ -121,19 +121,16 @@ class DistSelfAttention(nn.Module):
         logits_dist = GaussianDiag(logits_mu, torch.log(torch.sqrt(logits_var + 1e-6)))
 
         # 4. Softmax approximation strategy
-        # Flatten for topk operation across sequence length
-        flat_logits_mu = logits_dist.mean().view(-1, logits_dist.mean().size(-1))
-        
-        # Get top-k indices
-        # topk_idx = flat_logits_mu.topk(self.k_top, dim=-1).indices
-        # For now, let's simplify and assume topk_idx is not used for exclusion in softmax_logit_normal
-        # as the current implementation of softmax_logit_normal doesn't fully support it.
-        topk_idx = None # Placeholder for now
+        # logits shape assumption after split: (B,H,L_q,L_k) for scores → softmax over L_k
+        logits_mu_for_topk = logits_dist.mean()  # (B,H,L_q,L_k) or (B,H,L_k) depending on your wiring
+        # 여기서는 self-attn with square L assumed: choose top-k along last dim
+        topk_idx = logits_mu_for_topk.topk(self.k_top, dim=-1).indices  # (..., K)
 
         # Top-k logits: MC/UKF (placeholder for now)
-        attn_weights_top = softmax_via_samples(logits_dist, topk_idx, cfg)
+        attn_weights_top = softmax_via_samples(logits_dist, topk_idx, cfg)  # TODO: future exactify
         
         # Remaining logits: logit-normal approximation
+        # exclude=topk_idx → 해당 위치는 샘플 기반 파트가 담당한다고 가정하고 Dirichlet 쪽은 weight 거의 0으로
         attn_weights_rest = softmax_logit_normal(logits_dist, exclude=topk_idx)
 
         # Combine attention weights
