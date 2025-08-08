@@ -46,14 +46,68 @@ def bilinear_moment(Q: BaseDistribution, K: BaseDistribution, cfg: DistConfig):
     else:
         raise NotImplementedError("bilinear_moment only implemented for GaussianDiag for now.")
 
-def softmax_via_samples(logits_dist: BaseDistribution, topk_idx: torch.Tensor, cfg: DistConfig) -> BaseDistribution:
+def _softmax_fn(x: torch.Tensor, dim: int = -1) -> torch.Tensor:
+    return F.softmax(x, dim=dim)
+
+def softmax_via_samples(
+    logits_dist: BaseDistribution,
+    topk_idx: torch.Tensor | None,
+    cfg: DistConfig
+) -> BaseDistribution:
     """
     샘플링 기반 (MC/UKF)으로 소프트맥스 확률을 정확화합니다.
     """
-    # TODO: Implement sampling-based softmax approximation
-    # For now, a simple placeholder
-    p = F.softmax(logits_dist.mean(), dim=-1)
-    return GaussianDiag(p, torch.log(torch.full_like(p, 1e-6)))  # var≈0
+    mu = logits_dist.mean()          # (B,H,Lq,Lk)
+    var = logits_dist.var().clamp_min(1e-9)
+    std = var.sqrt()
+
+    # 샘플 개수
+    k = max(cfg.mc_k_min, min(cfg.mc_k_max, 8)) if cfg.mc_k_max > 0 else 0
+
+    if cfg.mode == DistMode.UKF or (cfg.mode == DistMode.AUTO and cfg.use_sigma_points):
+        # 배치 펼치기: (B*H*Lq, Lk)로 reshape 후 UKF 반복
+        B,H,Lq,Lk = mu.shape
+        mu_flat = mu.reshape(B*H*Lq, Lk)
+        var_flat = var.reshape(B*H*Lq, Lk)
+        
+        outs = []
+        for i in range(mu_flat.size(0)):
+            g = GaussianDiag(mu_flat[i], 0.5*torch.log(var_flat[i]+1e-9)) # Reconstruct GaussianDiag
+            y = propagate_ukf(g, lambda z: _softmax_fn(z, dim=-1))
+            outs.append(y.mean())  # cov도 원하면 y.cov()에서 diag 꺼내 tiny var로 사용
+        p = torch.stack(outs, dim=0).reshape(B,H,Lq,Lk)
+        return GaussianDiag(p, torch.log(torch.full_like(p, 1e-6)))
+
+    elif k == 0:
+        # fallback: 그냥 mean-softmax
+        p = F.softmax(mu, dim=-1)
+        return GaussianDiag(p, torch.log(torch.full_like(p, 1e-6)))
+
+    # MC 샘플링
+    eps = torch.randn((k,)+mu.shape, device=mu.device, dtype=mu.dtype)
+    samples = mu + std * eps
+    p_samples = F.softmax(samples, dim=-1)          # (k,B,H,Lq,Lk)
+    p_mean = p_samples.mean(dim=0)                  # (B,H,Lq,Lk)
+
+    if topk_idx is None:
+        return GaussianDiag(p_mean, torch.log(torch.full_like(p_mean, 1e-6)))
+
+    # rest는 Dirichlet 근사로 보정해서 섞기
+    from ..core.moments import softmax_logit_normal
+    rest_dir = softmax_logit_normal(logits_dist, exclude=topk_idx)
+    rest_mean = rest_dir.mean()                     # (B,H,Lq,Lk)
+
+    # Top-k 위치는 p_mean, 나머지는 rest_mean → 후 renorm
+    # 만드는 마스크: one-hot/one for topk indices along last dim
+    mask = torch.zeros_like(p_mean, dtype=torch.bool)
+    # scatter True into mask with topk_idx
+    updates = torch.ones_like(topk_idx, dtype=torch.bool)
+    mask = mask.scatter(-1, topk_idx, updates)
+
+    out = torch.where(mask, p_mean, rest_mean)
+    out = out / out.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+
+    return GaussianDiag(out, torch.log(torch.full_like(out, 1e-6)))
 
 def combine_top_rest(attn_weights_top: BaseDistribution, attn_weights_rest: BaseDistribution) -> BaseDistribution:
     """
@@ -114,7 +168,6 @@ class DistSelfAttention(nn.Module):
         V_proj_dist = V_dist.affine(self.v_proj.weight, self.v_proj.bias)
 
         # Split heads for projected distributions
-        # This requires BaseDistribution to handle splitting its internal parameters
         # For now, assume GaussianDiag and split loc and log_scale
         Q_proj_dist_split = GaussianDiag(
             self._split_heads(Q_proj_dist.loc),
@@ -130,7 +183,6 @@ class DistSelfAttention(nn.Module):
         )
 
         # 2. Calculate scores S = QK^T / sqrt(d_k)
-        # S is also a distribution
         S = bilinear_moment(Q_proj_dist_split, K_proj_dist_split, cfg) # E[S], Var[S]
         
         # Apply scaling factor
@@ -145,19 +197,17 @@ class DistSelfAttention(nn.Module):
         logits_dist = GaussianDiag(logits_mu, torch.log(torch.sqrt(logits_var + 1e-6)))
 
         # 4. Softmax approximation strategy
-        # logits shape assumption after split: (B,H,L_q,L_k) for scores → softmax over L_k
-        logits_mu_for_topk = logits_dist.mean()  # (B,H,L_q,L_k) or (B,H,L_k) depending on your wiring
+        logits_mu_for_topk = logits_dist.mean()  # (B,H,L_q,L_k)
         
         # k_top 방어 로직: 시퀀스 길이(L_k)가 k_top보다 작으면 k_top을 시퀀스 길이로 제한
         Lk = logits_mu_for_topk.size(-1)
         k = min(self.k_top, Lk)
         topk_idx = logits_mu_for_topk.topk(k, dim=-1).indices  # (..., K)
 
-        # Top-k logits: MC/UKF (placeholder for now)
-        attn_weights_top = softmax_via_samples(logits_dist, topk_idx, cfg)  # TODO: future exactify
+        # Top-k logits: MC/UKF
+        attn_weights_top = softmax_via_samples(logits_dist, topk_idx, cfg)
         
         # Remaining logits: logit-normal approximation
-        # exclude=topk_idx → 해당 위치는 샘플 기반 파트가 담당한다고 가정하고 Dirichlet 쪽은 weight 거의 0으로
         attn_weights_rest = softmax_logit_normal(logits_dist, exclude=topk_idx)
 
         # Combine attention weights

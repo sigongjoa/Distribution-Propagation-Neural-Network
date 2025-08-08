@@ -62,16 +62,18 @@ def approx_entropy(dist: BaseDistribution) -> torch.Tensor:
         return 0.5 * torch.log(2 * torch.pi * torch.e * v + 1e-6).mean()
     return torch.tensor(0.0, device=dist.mean().device if hasattr(dist, 'mean') else None)
 
-def decide_mode(dist, nonlin, cfg: DistConfig) -> DistMode:
+def decide_mode(dist: BaseDistribution, nonlin, cfg: DistConfig) -> DistMode:
     """
     분포와 비선형성에 따라 전파 모드를 결정합니다.
     """
     H = approx_curvature(dist, nonlin)   # 예: f''(μ) 규모로 근사
     ent = approx_entropy(dist)           # 정규화 엔트로피
+    last_dim = dist.mean().size(-1) # 마지막 차원 크기
+
     if ent > cfg.entropy_threshold or H > cfg.curvature_threshold:
         # 어려운 구간
-        if cfg.use_sigma_points: return DistMode.UKF
-        if cfg.mc_k_max > 0:     return DistMode.MC
+        if cfg.use_sigma_points and last_dim <= 64: return DistMode.UKF
+        if cfg.mc_k_max > 0: return DistMode.MC
     # 쉬운 구간
     return DistMode.MOMENT if H < 0.3 else DistMode.DELTA
 
@@ -91,8 +93,8 @@ def softmax_logit_normal(S: BaseDistribution, exclude: torch.Tensor | None = Non
     if exclude is not None:
         # exclude shape must be broadcastable to alpha[..., K]
         # 지원 형태: (..., K)
+        # exclude의 배치 차원과 alpha의 배치 차원이 일치하는지 확인
         if exclude.size(0) != alpha.size(0) or exclude.size(1) != alpha.size(1):
-            # 이미 맞게 보냈으니 아마 필요 없겠지만, 혹시 대비해서 에러 메시지 명확화
             raise ValueError(f"exclude batch dims must match alpha: exclude{tuple(exclude.shape)} vs alpha{tuple(alpha.shape)}")
         updates = torch.full_like(exclude, eps, dtype=alpha.dtype, device=alpha.device)
         alpha = alpha.scatter(-1, exclude, updates)
