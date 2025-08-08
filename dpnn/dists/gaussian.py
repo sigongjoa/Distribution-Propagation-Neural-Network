@@ -1,4 +1,5 @@
 import torch
+import math
 from typing import Tuple, Optional
 from ..core.distribution import BaseDistribution
 from ..core.numerics import stable_softplus
@@ -40,7 +41,7 @@ class GaussianDiag(BaseDistribution):
         # H(X) = 0.5 * log((2 * pi * e)^k * |Sigma|)
         # For diagonal covariance, |Sigma| = product(var)
         k = self.event_shape[0]
-        return 0.5 * torch.sum(torch.log(2 * torch.pi * torch.e * self.var()), dim=-1)
+        return 0.5 * torch.sum(torch.log(2 * math.pi * math.e * self.var()), dim=-1)
 
     def sample(self, n: Optional[int] = None) -> torch.Tensor:
         base_dist = torch.distributions.Normal(self.loc, self.scale)
@@ -92,7 +93,7 @@ class GaussianDiag(BaseDistribution):
         두 GaussianDiag 분포를 더합니다 (독립 가정).
         """
         if not isinstance(other, GaussianDiag):
-            raise TypeError(f"Unsupported operand type(s) for +: 'GaussianDiag' and '{type(other).__name__}'")
+            raise TypeError(f"Unsupported operand type(s) for +: 'GaussianDiag' and '{type(other).__name__}'')
         
         new_loc = self.loc + other.loc
         new_var = self.var() + other.var()

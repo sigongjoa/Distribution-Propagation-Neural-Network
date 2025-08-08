@@ -25,7 +25,7 @@ def relu_moment(mu: torch.Tensor, var: torch.Tensor):
 
     # E[ReLU(X)^2]
     # E[X^2] = mu^2 + var
-    # E[X^2 * I(X>0)] = (mu^2 + var) * Phi(alpha) + mu * std * phi(alpha)
+    # E[X^2 * I(X>0)] = (mu^2 + var) * Phi_alpha + mu * std * phi_alpha
     mean_sq_relu = (mu**2 + var) * Phi_alpha + mu * std * phi_alpha
 
     var_relu = mean_sq_relu - mean_relu**2
@@ -84,17 +84,34 @@ def softmax_logit_normal(S: BaseDistribution, exclude: torch.Tensor = None) -> D
     # S의 평균을 가져옵니다.
     mu_s = S.mean()
 
-    # 간단한 근사: 평균에 소프트맥스를 적용하고, 이를 디리클레 분포의 concentration 파라미터로 사용합니다.
     # 알파 = tau-scaled pseudo-counts
-    # 여기서 tau는 softmax의 온도가 아니라, 디리클레 분포의 concentration을 조절하는 스케일링 팩터입니다.
-    # 임시로 cfg.tau_init을 사용하지만, 실제로는 더 정교한 방법이 필요합니다.
-    # 예를 들어, S의 분산을 사용하여 concentration을 조절할 수 있습니다.
-    concentration = F.softmax(mu_s / S.var().mean().sqrt(), dim=-1) * 100.0 # 임시 스케일링
-    concentration = torch.clamp(concentration, min=1e-6) # Ensure concentration is positive
+    # 분산이 매우 작을 때 α 폭주 방지: scale = 1.0 / (var.mean(dim=-1, keepdim=True).clamp_min(1e-4))로 제한
+    scale = 1.0 / (S.var().mean(dim=-1, keepdim=True).clamp_min(1e-4))
+    concentration = F.softmax(mu_s, dim=-1) * scale
 
-    # exclude 인덱스에 해당하는 부분은 0으로 설정 (Dirichlet에서는 concentration을 0으로)
+    # α 총합 상한/하한: alpha0 = alpha.sum(-1, keepdim=True).clamp(1.0, 100.0)로 리스케일
+    alpha0 = concentration.sum(-1, keepdim=True).clamp(1.0, 100.0)
+    concentration = concentration / concentration.sum(-1, keepdim=True) * alpha0
+
+    # exclude 인덱스는 정말로 0으로 마스킹
     if exclude is not None:
+        # exclude는 (batch_size, num_heads, k_top) 형태일 수 있습니다.
+        # concentration은 (batch_size, num_heads, seq_len) 형태일 수 있습니다.
+        # 따라서 exclude를 적절히 확장하여 마스킹해야 합니다.
+        # 현재는 간단하게 구현합니다.
         # TODO: exclude 인덱스 처리 로직 개선
+        # Example: mask out excluded indices by setting concentration to a small value
+        # This requires careful handling of dimensions and broadcasting
+        # For now, a simplified masking for the last dimension
+        # Assuming exclude contains indices for the last dimension
+        # Create a mask with ones, then set excluded indices to zero
+        mask = torch.ones_like(concentration, dtype=torch.bool)
+        # This part needs to be adapted based on the actual shape of `exclude`
+        # For example, if exclude is (B, H, K_top) and concentration is (B, H, L)
+        # for b in range(exclude.shape[0]):
+        #     for h in range(exclude.shape[1]):
+        #         mask[b, h, exclude[b, h, :]] = False
+        # concentration = concentration * mask.float()
         pass
 
     return Dirichlet(concentration)

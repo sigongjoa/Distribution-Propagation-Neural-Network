@@ -38,6 +38,8 @@ class DistTransformerBlock(nn.Module):
         self.counter = 0
 
     def forward(self, X: BaseDistribution, cfg: DistConfig) -> BaseDistribution:
+        assert isinstance(X, GaussianDiag), "DistTransformerBlock currently only supports GaussianDiag input."
+
         # Attention sub-layer
         X_attn = self.attn(norm(X), norm(X), norm(X), cfg) + X # Add residual connection
         
@@ -48,3 +50,4 @@ class DistTransformerBlock(nn.Module):
         if self.counter % self.resample_every == 0 and cfg.mc_k_max > 0:
             X_mlp = resample_moments(X_mlp, k=max(cfg.mc_k_min, 1))  # MC로 모멘트 리셋
         return X_mlp
+mlp
