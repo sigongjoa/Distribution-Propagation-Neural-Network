@@ -37,5 +37,5 @@ def test_softmax_logit_normal_exclude_masking():
 
     # 마스킹된 위치의 평균확률이 충분히 작아졌는지 검사
     # (완전 0은 아님: Dirichlet α=eps → mean≈eps/α0 이므로 매우 작아야 함)
-    gathered = p_mean.gather(dim=-1, index=topk_idx)  # (B,H,K_top)
+    gathered = p_mean.gather(dim=-1, index=topk_idx)
     assert torch.all(gathered < 1e-3), f"Masked probs not small enough: max={gathered.max().item()}"

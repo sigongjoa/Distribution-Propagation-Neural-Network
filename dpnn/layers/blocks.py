@@ -50,3 +50,5 @@ class DistTransformerBlock(nn.Module):
         if self.counter % self.resample_every == 0 and cfg.mc_k_max > 0:
             X_mlp = resample_moments(X_mlp, k=max(cfg.mc_k_min, 1))  # MC로 모멘트 리셋
         return X_mlp
+mlp
+mlp

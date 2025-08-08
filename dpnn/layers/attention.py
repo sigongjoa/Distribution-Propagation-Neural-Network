@@ -17,7 +17,31 @@ def bilinear_moment(Q: BaseDistribution, K: BaseDistribution, cfg: DistConfig):
     if isinstance(Q, GaussianDiag) and isinstance(K, GaussianDiag):
         # Simplified: just multiply means for score, variance is more complex
         S_mu = Q.loc @ K.loc.transpose(-1,-2)
-        S_var = (Q.var().unsqueeze(-2) @ (K.loc.transpose(-1,-2)**2)).squeeze(-2) # 아주 러프
+        
+        # Variance propagation for S = QK^T
+        # Var(S_ij) = sum_k (E[Q_ik]^2 Var(K_jk) + E[K_jk]^2 Var(Q_ik) + Var(Q_ik)Var(K_jk))
+        # Q.loc: (B,H,L_q,Dh), Q.var(): (B,H,L_q,Dh)
+        # K.loc: (B,H,L_k,Dh), K.var(): (B,H,L_k,Dh)
+        
+        Q_loc_sq = Q.loc**2
+        K_loc_sq = K.loc**2
+        Q_var = Q.var()
+        K_var = K.var()
+
+        # Term 1: E[Q_ik]^2 * Var(K_jk)
+        # (B,H,L_q,Dh) @ (B,H,Dh,L_k) -> (B,H,L_q,L_k)
+        term1 = torch.matmul(Q_loc_sq, K_var.transpose(-1,-2))
+
+        # Term 2: E[K_jk]^2 * Var(Q_ik)
+        # (B,H,L_q,Dh) @ (B,H,Dh,L_k) -> (B,H,L_q,L_k)
+        term2 = torch.matmul(Q_var, K_loc_sq.transpose(-1,-2))
+
+        # Term 3: Var(Q_ik) * Var(K_jk)
+        # (B,H,L_q,Dh) @ (B,H,Dh,L_k) -> (B,H,L_q,L_k)
+        term3 = torch.matmul(Q_var, K_var.transpose(-1,-2))
+
+        S_var = term1 + term2 + term3
+
         return GaussianDiag(S_mu, 0.5*torch.log(S_var + 1e-6))
     else:
         raise NotImplementedError("bilinear_moment only implemented for GaussianDiag for now.")
